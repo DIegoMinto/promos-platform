@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CLIENTE
+  NEGOCIO
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  status    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business Business?
+}
+
+model Business {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  name        String
+  description String?
+  phone       String?
+  logo        String?
+  address     String?
+  city        String?
+  latitude    Float?
+  longitude   Float?
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  promotions Promotion[]
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  icon        String?
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  promotions Promotion[]
+}
+
+model Promotion {
+  id            Int      @id @default(autoincrement())
+  businessId    Int
+  categoryId    Int
+  title         String
+  description   String?
+  image         String?
+  originalPrice Decimal  @db.Decimal(10, 2)
+  discountPrice Decimal  @db.Decimal(10, 2)
+  startDate     DateTime
+  endDate       DateTime
+  status        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
