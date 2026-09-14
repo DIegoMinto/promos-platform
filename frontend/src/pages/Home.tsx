@@ -1,18 +1,4 @@
-import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-
-const LogoIcon = () => (
-  <svg width="36" height="42" viewBox="0 0 36 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="36" height="42" rx="10" fill="#E31E24"/>
-    <circle cx="18" cy="7" r="2.5" fill="white"/>
-    <path d="M12 15C12 15 13.5 13.5 15 15" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M21 15C21 15 22.5 13.5 24 15" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-    <circle cx="14" cy="20" r="2" fill="white"/>
-    <circle cx="22" cy="29" r="2" fill="white"/>
-    <line x1="12" y1="30" x2="24" y2="19" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-    <path d="M14 34C16.5 36 19.5 36 22 34" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
 
 const SearchIcon = () => (
   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
