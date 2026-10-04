@@ -1,124 +1,107 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service.js';
-import { Prisma } from '@prisma/client';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
-import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { UpdateProfileDto } from './dto/update-profile.dto.js';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async findAll() {
-  const users = await this.prisma.user.findMany({
-    where: {
-      status: true,
-    },
-  });
+  async getProfile(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        business: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            phone: true,
+            logo: true,
+            address: true,
+            city: true,
+          },
+        },
+      },
+    });
 
-  return users.map((user) => this.removePassword(user));
-}
+    if (!user) {
+      throw new NotFoundException(
+        'Usuario no encontrado',
+      );
+    }
 
-  async create(createUserDto: CreateUserDto) {
-  const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-  const user = await this.prisma.user.create({
-    data: {
-      name: createUserDto.name,
-      email: createUserDto.email,
-      password: hashedPassword,
-      role: createUserDto.role,
-    },
-  });
-
-  return this.removePassword(user);
-}
-
-async findOne(id: number) {
-  const user = await this.prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
-
-  if (!user) {
-    throw new NotFoundException('Usuario no encontrado');
+    return user;
   }
 
-  return this.removePassword(user);
-}
+  async updateProfile(
+    userId: number,
+    updateProfileDto: UpdateProfileDto,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
-private removePassword(user: Prisma.UserGetPayload<{}>) {
-  const { password, ...userWithoutPassword } = user;
+    if (!user) {
+      throw new NotFoundException(
+        'Usuario no encontrado',
+      );
+    }
 
-  return userWithoutPassword;
-}
+    if (
+      updateProfileDto.email &&
+      updateProfileDto.email !== user.email
+    ) {
+      const existingUser =
+        await this.prisma.user.findUnique({
+          where: {
+            email: updateProfileDto.email,
+          },
+        });
 
-async update(id: number, updateUserDto: UpdateUserDto) {
-  const user = await this.prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
+      if (existingUser) {
+        throw new ConflictException(
+          'El correo electrónico ya está registrado',
+        );
+      }
+    }
 
-  if (!user) {
-    throw new NotFoundException('Usuario no encontrado');
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        ...(updateProfileDto.name !== undefined && {
+          name: updateProfileDto.name,
+        }),
+        ...(updateProfileDto.email !== undefined && {
+          email: updateProfileDto.email,
+        }),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true,
+      },
+    });
   }
-
-  const data: {
-    name?: string;
-    email?: string;
-    password?: string;
-    role?: UpdateUserDto['role'];
-  } = {};
-
-  if (updateUserDto.name !== undefined) {
-    data.name = updateUserDto.name;
-  }
-
-  if (updateUserDto.email !== undefined) {
-    data.email = updateUserDto.email;
-  }
-
-  if (updateUserDto.role !== undefined) {
-    data.role = updateUserDto.role;
-  }
-
-  if (updateUserDto.password !== undefined) {
-    data.password = await bcrypt.hash(updateUserDto.password, 10);
-  }
-
-  const updatedUser = await this.prisma.user.update({
-    where: {
-      id,
-    },
-    data,
-  });
-
-  return this.removePassword(updatedUser);
-}
-
-async remove(id: number) {
-  const user = await this.prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
-
-  if (!user) {
-    throw new NotFoundException('Usuario no encontrado');
-  }
-
-  const updatedUser = await this.prisma.user.update({
-    where: {
-      id,
-    },
-    data: {
-      status: false,
-    },
-  });
-
-  return this.removePassword(updatedUser);
-}
 }

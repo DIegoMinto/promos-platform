@@ -40,8 +40,26 @@ model Business {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
   promotions Promotion[]
+  branches   Branch[]
+}
+
+model Branch {
+  id         Int      @id @default(autoincrement())
+  businessId Int
+  name       String
+  address    String
+  city       String?
+  phone      String?
+  latitude   Float?
+  longitude  Float?
+  status     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business   Business          @relation(fields: [businessId], references: [id])
+  promotions PromotionBranch[]
 }
 
 model Category {
@@ -52,6 +70,7 @@ model Category {
   status      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
   promotions Promotion[]
 }
 
@@ -70,6 +89,17 @@ model Promotion {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  business Business @relation(fields: [businessId], references: [id])
-  category Category @relation(fields: [categoryId], references: [id])
+  business Business          @relation(fields: [businessId], references: [id])
+  category Category          @relation(fields: [categoryId], references: [id])
+  branches PromotionBranch[]
+}
+
+model PromotionBranch {
+  promotionId Int
+  branchId    Int
+
+  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  branch    Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([promotionId, branchId])
 }

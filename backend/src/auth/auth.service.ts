@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, ConflictException, } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -29,6 +29,19 @@ export class AuthService {
     );
   }
 
+  const role =
+    registerDto.role === 'NEGOCIO'
+      ? UserRole.NEGOCIO
+      : UserRole.CLIENTE;
+
+  if (role === UserRole.NEGOCIO) {
+    if (!registerDto.businessName) {
+      throw new BadRequestException(
+        'El nombre del negocio es obligatorio',
+      );
+    }
+  }
+
   const hashedPassword = await bcrypt.hash(
     registerDto.password,
     10,
@@ -39,18 +52,26 @@ export class AuthService {
       name: registerDto.name,
       email: registerDto.email,
       password: hashedPassword,
-      role: UserRole.CLIENTE,
+      role,
     },
   });
 
+  if (role === UserRole.NEGOCIO) {
+    await this.prisma.business.create({
+      data: {
+        userId: user.id,
+        name: registerDto.businessName!,
+        description:
+          registerDto.businessDescription,
+        phone: registerDto.businessPhone,
+        address: registerDto.businessAddress,
+        city: registerDto.businessCity,
+      },
+    });
+  }
+
   return {
-    message: 'Usuario registrado correctamente',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
+    message: 'Cuenta creada correctamente',
   };
 }
 

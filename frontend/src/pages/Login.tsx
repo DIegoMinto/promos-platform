@@ -1,18 +1,16 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/useAuth';
 
-interface LoginProps {
-  onBackToHome: () => void;
-  onLoginSuccess: () => void;
-}
 
-function Login({ onBackToHome, onLoginSuccess }: LoginProps) {
+function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const navigate = useNavigate();
+const { login } = useAuth();
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,7 +43,11 @@ function Login({ onBackToHome, onLoginSuccess }: LoginProps) {
 
       login(data.accessToken, data.user);
 
-      onLoginSuccess();
+if (data.user.role === 'NEGOCIO') {
+  navigate('/negocio');
+} else {
+  navigate('/');
+}
     } catch (error) {
       setError(
         error instanceof Error
@@ -130,7 +132,7 @@ function Login({ onBackToHome, onLoginSuccess }: LoginProps) {
 
               <button
                 type="button"
-                onClick={onBackToHome}
+                onClick={() => navigate('/')}
                 className="mb-6 text-sm font-bold text-[#1D52A0] hover:underline"
               >
                 ← Volver al inicio
@@ -238,11 +240,12 @@ function Login({ onBackToHome, onLoginSuccess }: LoginProps) {
                   ¿No tienes una cuenta?{' '}
 
                   <button
-                    type="button"
-                    className="font-black text-[#1D52A0] hover:underline"
-                  >
-                    Regístrate
-                  </button>
+  type="button"
+  onClick={() => navigate('/register')}
+  className="font-black text-[#1D52A0] hover:underline"
+>
+  Regístrate
+</button>
 
                 </p>
 

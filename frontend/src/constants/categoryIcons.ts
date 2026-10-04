@@ -1,0 +1,41 @@
+import {
+  Utensils,
+  Shirt,
+  Smartphone,
+  Sparkles,
+  Dumbbell,
+  Home,
+  Plane,
+  Briefcase,
+  ShoppingCart,
+  Car,
+  PawPrint,
+  GraduationCap,
+  Coffee,
+  Gamepad2,
+  Heart,
+  Wrench,
+  type LucideIcon,
+} from 'lucide-react';
+
+export const categoryIcons: Record<
+  string,
+  LucideIcon
+> = {
+  restaurant: Utensils,
+  fashion: Shirt,
+  electronics: Smartphone,
+  beauty: Sparkles,
+  sports: Dumbbell,
+  home: Home,
+  travel: Plane,
+  services: Briefcase,
+  supermarket: ShoppingCart,
+  automotive: Car,
+  pets: PawPrint,
+  education: GraduationCap,
+  coffee: Coffee,
+  entertainment: Gamepad2,
+  health: Heart,
+  repairs: Wrench,
+};
