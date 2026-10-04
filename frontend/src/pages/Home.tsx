@@ -6,6 +6,8 @@ import {
   ShoppingBag,
   Tag,
   MapPin,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -68,6 +70,9 @@ function Home() {
     useState<number | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [mobileMenuOpen, setMobileMenuOpen] =
+  useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -362,39 +367,159 @@ function Home() {
             </div>
           </nav>
 
-          <div className="flex md:hidden">
-            {user ? (
-              <button
-                type="button"
-                onClick={() => {
-                  if (user.role === 'CLIENTE') {
-                    navigate('/perfil');
-                    return;
-                  }
+          <div className="relative md:hidden">
+  <button
+    type="button"
+    onClick={() =>
+      setMobileMenuOpen((open) => !open)
+    }
+    className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-[#1D52A0] transition hover:bg-slate-50"
+    aria-label={
+      mobileMenuOpen
+        ? 'Cerrar menú'
+        : 'Abrir menú'
+    }
+    aria-expanded={mobileMenuOpen}
+  >
+    {mobileMenuOpen ? (
+      <X size={22} />
+    ) : (
+      <Menu size={22} />
+    )}
+  </button>
 
-                  if (user.role === 'NEGOCIO') {
-                    navigate('/negocio');
-                    return;
-                  }
+  {mobileMenuOpen && (
+    <div className="absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+      <div className="border-b border-slate-100 px-4 py-3">
+        {user ? (
+          <>
+            <p className="truncate text-sm font-bold text-slate-800">
+              {user.name}
+            </p>
 
-                  navigate('/admin');
-                }}
-                className="rounded-lg bg-[#1D52A0] px-3 py-2 text-xs font-bold text-white"
-              >
-                MI CUENTA
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() =>
-                  navigate('/login')
+            <p className="mt-0.5 text-[11px] font-semibold text-[#1D52A0]">
+              {user.role === 'CLIENTE'
+                ? 'Cliente'
+                : user.role === 'NEGOCIO'
+                  ? 'Negocio'
+                  : 'Administrador'}
+            </p>
+          </>
+        ) : (
+          <p className="text-sm font-bold text-slate-800">
+            Promos Platform
+          </p>
+        )}
+      </div>
+
+      <div className="p-2">
+        <button
+          type="button"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            navigate('/');
+          }}
+          className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-[#1D52A0]"
+        >
+          Inicio
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            scrollToPromotions();
+          }}
+          className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-[#1D52A0]"
+        >
+          Promociones
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            document
+              .getElementById('categorias')
+              ?.scrollIntoView({
+                behavior: 'smooth',
+              });
+          }}
+          className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-[#1D52A0]"
+        >
+          Categorías
+        </button>
+
+        <div className="my-2 border-t border-slate-100" />
+
+        {user ? (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+
+                if (user.role === 'CLIENTE') {
+                  navigate('/perfil');
+                  return;
                 }
-                className="rounded-lg bg-[#1D52A0] px-3 py-2 text-xs font-bold text-white"
-              >
-                INGRESAR
-              </button>
-            )}
-          </div>
+
+                if (user.role === 'NEGOCIO') {
+                  navigate('/negocio');
+                  return;
+                }
+
+                navigate('/admin');
+              }}
+              className="flex w-full items-center rounded-xl bg-blue-50 px-3 py-3 text-left text-sm font-bold text-[#1D52A0] transition hover:bg-blue-100"
+            >
+              {user.role === 'CLIENTE'
+                ? 'Mi perfil'
+                : user.role === 'NEGOCIO'
+                  ? 'Mi negocio'
+                  : 'Administración'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                logout();
+              }}
+              className="mt-2 flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-[#E31E24] transition hover:bg-red-50"
+            >
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/login');
+              }}
+              className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-[#1D52A0] transition hover:bg-blue-50"
+            >
+              Iniciar sesión
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/register');
+              }}
+              className="mt-2 flex w-full items-center rounded-xl bg-[#E31E24] px-3 py-3 text-left text-sm font-bold text-white transition hover:bg-red-700"
+            >
+              Regístrate
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )}
+</div>
         </div>
       </header>
 
