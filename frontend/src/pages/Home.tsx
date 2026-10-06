@@ -534,16 +534,14 @@ function Home() {
               </span>
 
               <h1 className="mt-5 text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
-                Las mejores
-                <br />
-                <br />
-                <span className="bg-accent text-white rounded-2xl p-2">
-                  promos
-                </span>
-                <h1 className="mt-5 text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
-                  de Bolivia
-                </h1>
-              </h1>
+  <span className="block">Las mejores</span>
+
+  <span className="my-2 inline-block rounded-2xl bg-accent px-4 py-1 text-white">
+    promos
+  </span>
+
+  <span className="block">de Bolivia</span>
+</h1>
 
               <p className="mt-5 max-w-2xl text-base leading-7 text-primary-light sm:text-lg">
                 Encuentra ofertas, descuentos y
