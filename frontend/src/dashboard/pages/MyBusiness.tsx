@@ -72,7 +72,7 @@ export default function MyBusiness() {
   const [success, setSuccess] = useState('');
 
   const [branchToToggle, setBranchToToggle] =
-  useState<Branch | null>(null);
+    useState<Branch | null>(null);
 
   const [togglingBranch, setTogglingBranch] =
     useState(false);
@@ -392,79 +392,79 @@ export default function MyBusiness() {
     }
   }
 
-async function handleToggleBranch() {
-  if (!accessToken || !branchToToggle) {
-    return;
-  }
-
-  try {
-    setTogglingBranch(true);
-    setError('');
-    setSuccess('');
-
-    const response = await fetch(
-      branchToToggle.status
-        ? `${import.meta.env.VITE_API_URL}/api/branches/${branchToToggle.id}`
-        : `${import.meta.env.VITE_API_URL}/api/branches/${branchToToggle.id}/restore`,
-      {
-        method: branchToToggle.status
-          ? 'DELETE'
-          : 'PATCH',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      const data = await response
-        .json()
-        .catch(() => null);
-
-      throw new Error(
-        data?.message ||
-          `No se pudo ${
-            branchToToggle.status
-              ? 'desactivar'
-              : 'activar'
-          } la sucursal`,
-      );
+  async function handleToggleBranch() {
+    if (!accessToken || !branchToToggle) {
+      return;
     }
 
-    const updatedBranch: Branch =
-      await response.json();
+    try {
+      setTogglingBranch(true);
+      setError('');
+      setSuccess('');
 
-    setBranches((currentBranches) =>
-      currentBranches.map((branch) =>
-        branch.id === updatedBranch.id
-          ? updatedBranch
-          : branch,
-      ),
-    );
+      const response = await fetch(
+        branchToToggle.status
+          ? `${import.meta.env.VITE_API_URL}/api/branches/${branchToToggle.id}`
+          : `${import.meta.env.VITE_API_URL}/api/branches/${branchToToggle.id}/restore`,
+        {
+          method: branchToToggle.status
+            ? 'DELETE'
+            : 'PATCH',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
 
-    setSuccess(
-      branchToToggle.status
-        ? 'La sucursal se desactivó correctamente.'
-        : 'La sucursal se activó correctamente.',
-    );
+      if (!response.ok) {
+        const data = await response
+          .json()
+          .catch(() => null);
 
-    setBranchToToggle(null);
-  } catch (error) {
-    setError(
-      error instanceof Error
-        ? error.message
-        : 'Ocurrió un error al actualizar la sucursal',
-    );
-  } finally {
-    setTogglingBranch(false);
+        throw new Error(
+          data?.message ||
+            `No se pudo ${
+              branchToToggle.status
+                ? 'desactivar'
+                : 'activar'
+            } la sucursal`,
+        );
+      }
+
+      const updatedBranch: Branch =
+        await response.json();
+
+      setBranches((currentBranches) =>
+        currentBranches.map((branch) =>
+          branch.id === updatedBranch.id
+            ? updatedBranch
+            : branch,
+        ),
+      );
+
+      setSuccess(
+        branchToToggle.status
+          ? 'La sucursal se desactivó correctamente.'
+          : 'La sucursal se activó correctamente.',
+      );
+
+      setBranchToToggle(null);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Ocurrió un error al actualizar la sucursal',
+      );
+    } finally {
+      setTogglingBranch(false);
+    }
   }
-}
 
   if (loading) {
     return (
       <div>
         <div className="mb-8">
-          <p className="text-sm font-medium text-blue-600">
+          <p className="text-sm font-medium text-primary">
             Configuración
           </p>
 
@@ -493,7 +493,7 @@ async function handleToggleBranch() {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-sm font-medium text-blue-600">
+        <p className="text-sm font-medium text-primary">
           Configuración
         </p>
 
@@ -526,7 +526,7 @@ async function handleToggleBranch() {
         {/* Información visual */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex flex-col items-center text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-blue-50 text-3xl font-black text-blue-700">
+            <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-primary-soft text-3xl font-black text-primary">
               {business?.name
                 ? business.name
                     .charAt(0)
@@ -576,7 +576,7 @@ async function handleToggleBranch() {
                   setName(event.target.value)
                 }
                 required
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
               />
             </div>
 
@@ -596,7 +596,7 @@ async function handleToggleBranch() {
                 }
                 rows={4}
                 placeholder="Describe brevemente tu negocio"
-                className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
               />
             </div>
 
@@ -616,7 +616,7 @@ async function handleToggleBranch() {
                   setPhone(event.target.value)
                 }
                 placeholder="Ej. 70000000"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
               />
             </div>
 
@@ -636,7 +636,7 @@ async function handleToggleBranch() {
                   setAddress(event.target.value)
                 }
                 placeholder="Ej. Calle Junín #123"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
               />
             </div>
 
@@ -656,7 +656,7 @@ async function handleToggleBranch() {
                   setCity(event.target.value)
                 }
                 placeholder="Ej. Sucre"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
               />
             </div>
           </div>
@@ -665,7 +665,7 @@ async function handleToggleBranch() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving
                 ? 'Guardando...'
@@ -693,7 +693,7 @@ async function handleToggleBranch() {
             onClick={() =>
               setShowBranchForm((current) => !current)
             }
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-800"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark"
           >
             <svg
               viewBox="0 0 24 24"
@@ -720,7 +720,7 @@ async function handleToggleBranch() {
         {showBranchForm && (
           <form
             onSubmit={handleCreateBranch}
-            className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/50 p-5"
+            className="mt-6 rounded-2xl border border-primary-light bg-primary-soft/50 p-5"
           >
             <div>
               <h3 className="text-base font-bold text-slate-900">
@@ -750,7 +750,7 @@ async function handleToggleBranch() {
                   }
                   placeholder="Ej. Sucursal San Roque"
                   required
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
 
@@ -770,7 +770,7 @@ async function handleToggleBranch() {
                     setBranchPhone(event.target.value)
                   }
                   placeholder="Ej. 70000000"
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
 
@@ -791,7 +791,7 @@ async function handleToggleBranch() {
                   }
                   placeholder="Ej. Calle Junín #456"
                   required
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
 
@@ -811,12 +811,12 @@ async function handleToggleBranch() {
                     setBranchCity(event.target.value)
                   }
                   placeholder="Ej. Sucre"
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col-reverse gap-3 border-t border-blue-100 pt-5 sm:flex-row sm:justify-end">
+            <div className="mt-6 flex flex-col-reverse gap-3 border-t border-primary-light pt-5 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={() =>
@@ -831,7 +831,7 @@ async function handleToggleBranch() {
               <button
                 type="submit"
                 disabled={creatingBranch}
-                className="rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {creatingBranch
                   ? 'Creando...'
@@ -845,7 +845,7 @@ async function handleToggleBranch() {
         {editingBranchId !== null && (
           <form
             onSubmit={handleUpdateBranch}
-            className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/50 p-5"
+            className="mt-6 rounded-2xl border border-primary-light bg-primary-soft/50 p-5"
           >
             <div>
               <h3 className="text-base font-bold text-slate-900">
@@ -874,7 +874,7 @@ async function handleToggleBranch() {
                     setBranchName(event.target.value)
                   }
                   required
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
 
@@ -893,7 +893,7 @@ async function handleToggleBranch() {
                   onChange={(event) =>
                     setBranchPhone(event.target.value)
                   }
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
 
@@ -913,7 +913,7 @@ async function handleToggleBranch() {
                     setBranchAddress(event.target.value)
                   }
                   required
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
 
@@ -932,12 +932,12 @@ async function handleToggleBranch() {
                   onChange={(event) =>
                     setBranchCity(event.target.value)
                   }
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col-reverse gap-3 border-t border-blue-100 pt-5 sm:flex-row sm:justify-end">
+            <div className="mt-6 flex flex-col-reverse gap-3 border-t border-primary-light pt-5 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={cancelEditingBranch}
@@ -950,7 +950,7 @@ async function handleToggleBranch() {
               <button
                 type="submit"
                 disabled={updatingBranch}
-                className="rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {updatingBranch
                   ? 'Guardando...'
@@ -998,7 +998,7 @@ async function handleToggleBranch() {
             {branches.map((branch) => (
               <div
                 key={branch.id}
-                className="rounded-2xl border border-slate-200 p-5 transition hover:border-blue-200 hover:shadow-sm"
+                className="rounded-2xl border border-slate-200 p-5 transition hover:border-primary-light hover:shadow-sm"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
@@ -1078,166 +1078,164 @@ async function handleToggleBranch() {
                     onClick={() =>
                       startEditingBranch(branch)
                     }
-                    className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-primary-light hover:bg-primary-soft hover:text-primary-dark"
                   >
                     Editar
                   </button>
 
-<button
-  type="button"
-  onClick={() => setBranchToToggle(branch)}
-  className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${
-    branch.status
-      ? 'border-slate-200 text-slate-700 hover:border-red-200 hover:bg-red-50 hover:text-red-700'
-      : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
-  }`}
->
-  {branch.status ? 'Desactivar' : 'Activar'}
-</button>
-
-
+                  <button
+                    type="button"
+                    onClick={() => setBranchToToggle(branch)}
+                    className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${
+                      branch.status
+                        ? 'border-slate-200 text-slate-700 hover:border-red-200 hover:bg-red-50 hover:text-red-700'
+                        : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
+                    }`}
+                  >
+                    {branch.status ? 'Desactivar' : 'Activar'}
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
       </section>
-{branchToToggle && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-sm"
-    onClick={() => {
-      if (!togglingBranch) {
-        setBranchToToggle(null);
-      }
-    }}
-  >
-    <div
-      className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"
-      onClick={(event) => event.stopPropagation()}
-    >
-      <div className="p-6 sm:p-7">
-        {/* Icono */}
+
+      {branchToToggle && (
         <div
-          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-            branchToToggle.status
-              ? 'bg-red-50 text-red-600'
-              : 'bg-emerald-50 text-emerald-600'
-          }`}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-sm"
+          onClick={() => {
+            if (!togglingBranch) {
+              setBranchToToggle(null);
+            }
+          }}
         >
-          {branchToToggle.status ? (
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="h-7 w-7"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v4"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 17h.01"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.3 3.8 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"
-              />
-            </svg>
-          ) : (
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="h-7 w-7"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 12.5 9.5 17 19 7.5"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 3a9 9 0 1 0 9 9"
-              />
-            </svg>
-          )}
-        </div>
+          <div
+            className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="p-6 sm:p-7">
+              {/* Icono */}
+              <div
+                className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+                  branchToToggle.status
+                    ? 'bg-red-50 text-red-600'
+                    : 'bg-emerald-50 text-emerald-600'
+                }`}
+              >
+                {branchToToggle.status ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-7 w-7"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v4"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 17h.01"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.3 3.8 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-7 w-7"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 12.5 9.5 17 19 7.5"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 3a9 9 0 1 0 9 9"
+                    />
+                  </svg>
+                )}
+              </div>
 
-        {/* Contenido */}
-        <div className="mt-5">
-          <h3 className="text-xl font-bold text-slate-900">
-            {branchToToggle.status
-              ? '¿Desactivar sucursal?'
-              : '¿Activar sucursal?'}
-          </h3>
+              {/* Contenido */}
+              <div className="mt-5">
+                <h3 className="text-xl font-bold text-slate-900">
+                  {branchToToggle.status
+                    ? '¿Desactivar sucursal?'
+                    : '¿Activar sucursal?'}
+                </h3>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            {branchToToggle.status
-              ? 'La sucursal dejará de estar disponible para los clientes. Podrás activarla nuevamente cuando quieras.'
-              : 'La sucursal volverá a estar disponible para los clientes.'}
-          </p>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  {branchToToggle.status
+                    ? 'La sucursal dejará de estar disponible para los clientes. Podrás activarla nuevamente cuando quieras.'
+                    : 'La sucursal volverá a estar disponible para los clientes.'}
+                </p>
 
-          {/* Sucursal seleccionada */}
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-900">
-              {branchToToggle.name}
-            </p>
+                {/* Sucursal seleccionada */}
+                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-bold text-slate-900">
+                    {branchToToggle.name}
+                  </p>
 
-            <p className="mt-1 text-sm text-slate-500">
-              {branchToToggle.address}
-              {branchToToggle.city
-                ? `, ${branchToToggle.city}`
-                : ''}
-            </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {branchToToggle.address}
+                    {branchToToggle.city
+                      ? `, ${branchToToggle.city}`
+                      : ''}
+                  </p>
+                </div>
+              </div>
+
+              {/* Acciones */}
+              <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  disabled={togglingBranch}
+                  onClick={() =>
+                    setBranchToToggle(null)
+                  }
+                  className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  disabled={togglingBranch}
+                  onClick={handleToggleBranch}
+                  className={`rounded-xl px-5 py-3 text-sm font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    branchToToggle.status
+                      ? 'bg-red-600 hover:bg-red-700'
+                      : 'bg-emerald-600 hover:bg-emerald-700'
+                  }`}
+                >
+                  {togglingBranch
+                    ? branchToToggle.status
+                      ? 'Desactivando...'
+                      : 'Activando...'
+                    : branchToToggle.status
+                      ? 'Desactivar sucursal'
+                      : 'Activar sucursal'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Acciones */}
-        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            disabled={togglingBranch}
-            onClick={() =>
-              setBranchToToggle(null)
-            }
-            className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Cancelar
-          </button>
-
-          <button
-            type="button"
-            disabled={togglingBranch}
-            onClick={handleToggleBranch}
-            className={`rounded-xl px-5 py-3 text-sm font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
-              branchToToggle.status
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-emerald-600 hover:bg-emerald-700'
-            }`}
-          >
-            {togglingBranch
-              ? branchToToggle.status
-                ? 'Desactivando...'
-                : 'Activando...'
-              : branchToToggle.status
-                ? 'Desactivar sucursal'
-                : 'Activar sucursal'}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 }

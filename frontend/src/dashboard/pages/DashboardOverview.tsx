@@ -154,7 +154,7 @@ export default function DashboardOverview() {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-sm font-medium text-blue-600">
+        <p className="text-sm font-medium text-primary">
           Panel de negocio
         </p>
 
@@ -192,7 +192,7 @@ export default function DashboardOverview() {
                 </p>
               </div>
 
-              <div className="rounded-xl bg-blue-50 p-3 text-blue-600">
+              <div className="rounded-xl bg-primary-soft p-3 text-primary">
                 {card.icon}
               </div>
             </div>

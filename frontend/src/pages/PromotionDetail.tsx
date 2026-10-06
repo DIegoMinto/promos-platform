@@ -188,7 +188,7 @@ function PromotionDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen items-center justify-center bg-surface">
         <p className="text-sm text-slate-400">
           Cargando promoción...
         </p>
@@ -198,7 +198,7 @@ function PromotionDetail() {
 
   if (error || !promotion) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-6 text-center">
         <h1 className="text-2xl font-black text-slate-900">
           Promoción no disponible
         </h1>
@@ -210,7 +210,7 @@ function PromotionDetail() {
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="mt-6 rounded-lg bg-[#1D52A0] px-5 py-3 text-xs font-bold text-white transition hover:bg-blue-800"
+          className="mt-6 rounded-lg bg-primary px-5 py-3 text-xs font-bold text-white transition hover:bg-primary-dark"
         >
           VOLVER AL INICIO
         </button>
@@ -236,13 +236,13 @@ function PromotionDetail() {
       : 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-surface">
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center px-6 py-3">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-[#1D52A0]"
+            className="flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-primary"
           >
             <ArrowLeftIcon />
             Volver
@@ -263,13 +263,13 @@ function PromotionDetail() {
                 className="h-full w-full object-cover"
               />
 
-              <span className="absolute left-5 top-5 rounded-full bg-[#E31E24] px-4 py-2 text-sm font-black text-white shadow-lg">
+              <span className="absolute left-5 top-5 rounded-full bg-accent px-4 py-2 text-sm font-black text-white shadow-lg">
                 {discountPercentage}% OFF
               </span>
             </div>
 
             <div className="flex flex-col p-6 sm:p-8 lg:p-10">
-              <span className="text-xs font-black uppercase tracking-widest text-[#1D52A0]">
+              <span className="text-xs font-black uppercase tracking-widest text-primary">
                 {promotion.category.name}
               </span>
 
@@ -278,7 +278,7 @@ function PromotionDetail() {
               </h1>
 
               <div className="mt-6 flex items-end gap-3">
-                <span className="text-4xl font-black text-[#E31E24]">
+                <span className="text-4xl font-black text-accent">
                   Bs. {discountPrice.toFixed(2)}
                 </span>
 
@@ -300,7 +300,7 @@ function PromotionDetail() {
 
               <div className="mt-8 rounded-2xl bg-slate-50 p-4">
                 <div className="flex gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#1D52A0]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-primary">
                     <CalendarIcon />
                   </div>
 
@@ -329,7 +329,7 @@ function PromotionDetail() {
                 promotion.branches.length > 0 && (
                   <div className="mt-4 rounded-2xl border border-slate-200 p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[#1D52A0]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
                         <BranchIcon />
                       </div>
 
@@ -435,7 +435,7 @@ function PromotionDetail() {
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="mt-6 w-full rounded-xl bg-[#1D52A0] py-3.5 text-sm font-black text-white transition hover:bg-blue-800"
+                className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-black text-white transition hover:bg-primary-dark"
               >
                 VER MÁS PROMOCIONES
               </button>

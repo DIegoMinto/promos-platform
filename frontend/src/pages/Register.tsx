@@ -107,7 +107,7 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-surface">
       {/* HEADER */}
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center px-6 py-4">
@@ -130,7 +130,7 @@ export default function Register() {
         <div className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           {/* TITLE */}
           <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-widest text-[#1D52A0]">
+            <p className="text-xs font-black uppercase tracking-widest text-primary">
               Crea tu cuenta
             </p>
 
@@ -153,7 +153,7 @@ export default function Register() {
               }
               className={`rounded-2xl border-2 p-5 text-left transition ${
                 accountType === 'CLIENTE'
-                  ? 'border-[#1D52A0] bg-blue-50'
+                  ? 'border-primary bg-primary-soft'
                   : 'border-slate-200 bg-white hover:border-slate-300'
               }`}
             >
@@ -172,7 +172,7 @@ export default function Register() {
                 <div
                   className={`h-5 w-5 rounded-full border-2 ${
                     accountType === 'CLIENTE'
-                      ? 'border-[#1D52A0] bg-[#1D52A0]'
+                      ? 'border-primary bg-primary'
                       : 'border-slate-300'
                   }`}
                 />
@@ -187,7 +187,7 @@ export default function Register() {
               }
               className={`rounded-2xl border-2 p-5 text-left transition ${
                 accountType === 'NEGOCIO'
-                  ? 'border-[#E31E24] bg-red-50'
+                  ? 'border-accent bg-accent-soft'
                   : 'border-slate-200 bg-white hover:border-slate-300'
               }`}
             >
@@ -206,7 +206,7 @@ export default function Register() {
                 <div
                   className={`h-5 w-5 rounded-full border-2 ${
                     accountType === 'NEGOCIO'
-                      ? 'border-[#E31E24] bg-[#E31E24]'
+                      ? 'border-accent bg-accent'
                       : 'border-slate-300'
                   }`}
                 />
@@ -244,7 +244,7 @@ export default function Register() {
                     }
                     required
                     placeholder="Tu nombre"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1D52A0] focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                   />
                 </div>
 
@@ -266,7 +266,7 @@ export default function Register() {
                     }
                     required
                     placeholder="correo@ejemplo.com"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1D52A0] focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                   />
                 </div>
 
@@ -289,7 +289,7 @@ export default function Register() {
                     required
                     minLength={6}
                     placeholder="Mínimo 6 caracteres"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1D52A0] focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ export default function Register() {
                       }
                       required
                       placeholder="Ej. Burger House"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-red-100"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
 
@@ -351,7 +351,7 @@ export default function Register() {
                       }
                       rows={3}
                       placeholder="Cuéntanos brevemente sobre tu negocio"
-                      className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-red-100"
+                      className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
 
@@ -374,7 +374,7 @@ export default function Register() {
                         )
                       }
                       placeholder="Ej. 70000000"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-red-100"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
 
@@ -397,7 +397,7 @@ export default function Register() {
                         )
                       }
                       placeholder="Ej. Sucre"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-red-100"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
 
@@ -420,7 +420,7 @@ export default function Register() {
                         )
                       }
                       placeholder="Ej. Av. Hernando Siles #123"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-red-100"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
                 </div>
@@ -447,8 +447,8 @@ export default function Register() {
               disabled={loading}
               className={`w-full rounded-xl py-3.5 text-sm font-black text-white transition ${
                 accountType === 'NEGOCIO'
-                  ? 'bg-[#E31E24] hover:bg-red-700'
-                  : 'bg-[#1D52A0] hover:bg-blue-800'
+                  ? 'bg-accent hover:bg-accent-dark'
+                  : 'bg-primary hover:bg-primary-dark'
               } ${
                 loading
                   ? 'cursor-not-allowed opacity-60'
@@ -472,7 +472,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => navigate('/login')}
-              className="mt-1 text-sm font-bold text-[#1D52A0] hover:underline"
+              className="mt-1 text-sm font-bold text-primary hover:underline"
             >
               Iniciar sesión
             </button>

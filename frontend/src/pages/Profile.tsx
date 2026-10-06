@@ -149,10 +149,10 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-surface">
         <div className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-4">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-primary" />
 
             <p className="text-sm text-slate-500">
               Cargando perfil...
@@ -165,7 +165,7 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-surface">
         <div className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-4">
           <div className="w-full rounded-2xl border border-red-100 bg-white p-6 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
@@ -197,7 +197,7 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-dark"
             >
               Volver al inicio
             </button>
@@ -223,7 +223,7 @@ export default function Profile() {
         : 'Administrador';
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-surface">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-2xl items-center px-4">
           <button
@@ -255,9 +255,9 @@ export default function Profile() {
 
       <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:py-8">
         <section className="mb-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-5 pb-6 pt-6">
+          <div className="bg-gradient-to-br from-primary to-primary-dark px-5 pb-6 pt-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-blue-700 shadow-sm">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-primary shadow-sm">
                 {initials || 'U'}
               </div>
 
@@ -266,7 +266,7 @@ export default function Profile() {
                   {profile.name}
                 </h2>
 
-                <p className="truncate text-sm text-blue-100">
+                <p className="truncate text-sm text-primary-light">
                   {profile.email}
                 </p>
 
@@ -321,7 +321,7 @@ export default function Profile() {
                   setName(event.target.value)
                 }
                 required
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary-light"
               />
             </div>
 
@@ -341,14 +341,14 @@ export default function Profile() {
                   setEmail(event.target.value)
                 }
                 required
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary-light"
               />
             </div>
 
             <button
               type="submit"
               disabled={saving}
-              className="flex w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving
                 ? 'Guardando...'

@@ -72,7 +72,7 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [mobileMenuOpen, setMobileMenuOpen] =
-  useState(false);
+    useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -232,7 +232,7 @@ function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+    <div className="min-h-screen bg-surface font-sans text-ink">
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
@@ -253,7 +253,7 @@ function Home() {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-xs font-bold uppercase tracking-wider text-slate-700 transition hover:text-[#E31E24]"
+              className="text-xs font-bold uppercase tracking-wider text-slate-700 transition hover:text-accent"
             >
               Inicio
             </button>
@@ -261,7 +261,7 @@ function Home() {
             <button
               type="button"
               onClick={scrollToPromotions}
-              className="text-xs font-bold uppercase tracking-wider text-slate-600 transition hover:text-[#E31E24]"
+              className="text-xs font-bold uppercase tracking-wider text-slate-600 transition hover:text-accent"
             >
               Promociones
             </button>
@@ -275,7 +275,7 @@ function Home() {
                     behavior: 'smooth',
                   });
               }}
-              className="text-xs font-bold uppercase tracking-wider text-slate-600 transition hover:text-[#E31E24]"
+              className="text-xs font-bold uppercase tracking-wider text-slate-600 transition hover:text-accent"
             >
               Categorías
             </button>
@@ -288,7 +288,7 @@ function Home() {
                       {user.name}
                     </p>
 
-                    <p className="text-[11px] font-semibold text-[#1D52A0]">
+                    <p className="text-[11px] font-semibold text-primary">
                       {user.role === 'CLIENTE'
                         ? 'Cliente'
                         : user.role === 'NEGOCIO'
@@ -303,7 +303,7 @@ function Home() {
                       onClick={() =>
                         navigate('/perfil')
                       }
-                      className="rounded-lg border-2 border-[#1D52A0] px-3 py-1.5 text-xs font-bold text-[#1D52A0] transition hover:bg-[#1D52A0] hover:text-white"
+                      className="rounded-lg border-2 border-primary px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary hover:text-white"
                     >
                       MI PERFIL
                     </button>
@@ -315,7 +315,7 @@ function Home() {
                       onClick={() =>
                         navigate('/negocio')
                       }
-                      className="rounded-lg border-2 border-[#1D52A0] px-3 py-1.5 text-xs font-bold text-[#1D52A0] transition hover:bg-[#1D52A0] hover:text-white"
+                      className="rounded-lg border-2 border-primary px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary hover:text-white"
                     >
                       MI NEGOCIO
                     </button>
@@ -327,7 +327,7 @@ function Home() {
                       onClick={() =>
                         navigate('/admin')
                       }
-                      className="rounded-lg border-2 border-[#1D52A0] px-3 py-1.5 text-xs font-bold text-[#1D52A0] transition hover:bg-[#1D52A0] hover:text-white"
+                      className="rounded-lg border-2 border-primary px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary hover:text-white"
                     >
                       ADMIN
                     </button>
@@ -336,7 +336,7 @@ function Home() {
                   <button
                     type="button"
                     onClick={logout}
-                    className="rounded-lg border-2 border-[#E31E24] px-3 py-1.5 text-xs font-bold text-[#E31E24] transition hover:bg-[#E31E24] hover:text-white"
+                    className="rounded-lg border-2 border-accent px-3 py-1.5 text-xs font-bold text-accent transition hover:bg-accent hover:text-white"
                   >
                     SALIR
                   </button>
@@ -348,7 +348,7 @@ function Home() {
                     onClick={() =>
                       navigate('/login')
                     }
-                    className="rounded-lg border-2 border-[#1D52A0] px-3 py-1.5 text-xs font-bold text-[#1D52A0] transition hover:bg-[#1D52A0] hover:text-white"
+                    className="rounded-lg border-2 border-primary px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary hover:text-white"
                   >
                     INICIAR SESIÓN
                   </button>
@@ -358,7 +358,7 @@ function Home() {
                     onClick={() =>
                       navigate('/register')
                     }
-                    className="rounded-lg bg-[#E31E24] px-3 py-2 text-xs font-bold text-white transition hover:bg-red-700"
+                    className="rounded-lg bg-accent px-3 py-2 text-xs font-bold text-white transition hover:bg-accent-dark"
                   >
                     REGÍSTRATE
                   </button>
@@ -368,180 +368,184 @@ function Home() {
           </nav>
 
           <div className="relative md:hidden">
-  <button
-    type="button"
-    onClick={() =>
-      setMobileMenuOpen((open) => !open)
-    }
-    className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-[#1D52A0] transition hover:bg-slate-50"
-    aria-label={
-      mobileMenuOpen
-        ? 'Cerrar menú'
-        : 'Abrir menú'
-    }
-    aria-expanded={mobileMenuOpen}
-  >
-    {mobileMenuOpen ? (
-      <X size={22} />
-    ) : (
-      <Menu size={22} />
-    )}
-  </button>
-
-  {mobileMenuOpen && (
-    <div className="absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
-      <div className="border-b border-slate-100 px-4 py-3">
-        {user ? (
-          <>
-            <p className="truncate text-sm font-bold text-slate-800">
-              {user.name}
-            </p>
-
-            <p className="mt-0.5 text-[11px] font-semibold text-[#1D52A0]">
-              {user.role === 'CLIENTE'
-                ? 'Cliente'
-                : user.role === 'NEGOCIO'
-                  ? 'Negocio'
-                  : 'Administrador'}
-            </p>
-          </>
-        ) : (
-          <p className="text-sm font-bold text-slate-800">
-            Promos Platform
-          </p>
-        )}
-      </div>
-
-      <div className="p-2">
-        <button
-          type="button"
-          onClick={() => {
-            setMobileMenuOpen(false);
-            navigate('/');
-          }}
-          className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-[#1D52A0]"
-        >
-          Inicio
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setMobileMenuOpen(false);
-            scrollToPromotions();
-          }}
-          className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-[#1D52A0]"
-        >
-          Promociones
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setMobileMenuOpen(false);
-            document
-              .getElementById('categorias')
-              ?.scrollIntoView({
-                behavior: 'smooth',
-              });
-          }}
-          className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-[#1D52A0]"
-        >
-          Categorías
-        </button>
-
-        <div className="my-2 border-t border-slate-100" />
-
-        {user ? (
-          <>
             <button
               type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-
-                if (user.role === 'CLIENTE') {
-                  navigate('/perfil');
-                  return;
-                }
-
-                if (user.role === 'NEGOCIO') {
-                  navigate('/negocio');
-                  return;
-                }
-
-                navigate('/admin');
-              }}
-              className="flex w-full items-center rounded-xl bg-blue-50 px-3 py-3 text-left text-sm font-bold text-[#1D52A0] transition hover:bg-blue-100"
+              onClick={() =>
+                setMobileMenuOpen((open) => !open)
+              }
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-primary transition hover:bg-slate-50"
+              aria-label={
+                mobileMenuOpen
+                  ? 'Cerrar menú'
+                  : 'Abrir menú'
+              }
+              aria-expanded={mobileMenuOpen}
             >
-              {user.role === 'CLIENTE'
-                ? 'Mi perfil'
-                : user.role === 'NEGOCIO'
-                  ? 'Mi negocio'
-                  : 'Administración'}
+              {mobileMenuOpen ? (
+                <X size={22} />
+              ) : (
+                <Menu size={22} />
+              )}
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                logout();
-              }}
-              className="mt-2 flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-[#E31E24] transition hover:bg-red-50"
-            >
-              Cerrar sesión
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate('/login');
-              }}
-              className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-[#1D52A0] transition hover:bg-blue-50"
-            >
-              Iniciar sesión
-            </button>
+            {mobileMenuOpen && (
+              <div className="absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                <div className="border-b border-slate-100 px-4 py-3">
+                  {user ? (
+                    <>
+                      <p className="truncate text-sm font-bold text-slate-800">
+                        {user.name}
+                      </p>
 
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate('/register');
-              }}
-              className="mt-2 flex w-full items-center rounded-xl bg-[#E31E24] px-3 py-3 text-left text-sm font-bold text-white transition hover:bg-red-700"
-            >
-              Regístrate
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  )}
-</div>
+                      <p className="mt-0.5 text-[11px] font-semibold text-primary">
+                        {user.role === 'CLIENTE'
+                          ? 'Cliente'
+                          : user.role === 'NEGOCIO'
+                            ? 'Negocio'
+                            : 'Administrador'}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm font-bold text-slate-800">
+                      Promos Platform
+                    </p>
+                  )}
+                </div>
+
+                <div className="p-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/');
+                    }}
+                    className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-primary-soft hover:text-primary"
+                  >
+                    Inicio
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      scrollToPromotions();
+                    }}
+                    className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-primary-soft hover:text-primary"
+                  >
+                    Promociones
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      document
+                        .getElementById('categorias')
+                        ?.scrollIntoView({
+                          behavior: 'smooth',
+                        });
+                    }}
+                    className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-primary-soft hover:text-primary"
+                  >
+                    Categorías
+                  </button>
+
+                  <div className="my-2 border-t border-slate-100" />
+
+                  {user ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+
+                          if (user.role === 'CLIENTE') {
+                            navigate('/perfil');
+                            return;
+                          }
+
+                          if (user.role === 'NEGOCIO') {
+                            navigate('/negocio');
+                            return;
+                          }
+
+                          navigate('/admin');
+                        }}
+                        className="flex w-full items-center rounded-xl bg-primary-soft px-3 py-3 text-left text-sm font-bold text-primary transition hover:bg-primary-light"
+                      >
+                        {user.role === 'CLIENTE'
+                          ? 'Mi perfil'
+                          : user.role === 'NEGOCIO'
+                            ? 'Mi negocio'
+                            : 'Administración'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          logout();
+                        }}
+                        className="mt-2 flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-accent transition hover:bg-accent-soft"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate('/login');
+                        }}
+                        className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-primary transition hover:bg-primary-soft"
+                      >
+                        Iniciar sesión
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate('/register');
+                        }}
+                        className="mt-2 flex w-full items-center rounded-xl bg-accent px-3 py-3 text-left text-sm font-bold text-white transition hover:bg-accent-dark"
+                      >
+                        Regístrate
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       <main>
         {/* HERO */}
-        <section className="relative overflow-hidden bg-gradient-to-r from-[#1D52A0] to-blue-900 py-16 text-white">
+        <section className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-deep py-16 text-white">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-blue-100">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary-light">
                 <Tag size={14} />
                 Promociones en Bolivia
               </span>
 
               <h1 className="mt-5 text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
-                DESCUBRE GRANDES
+                Las mejores
                 <br />
-                <span className="text-red-400">
-                  PROMOCIONES
+                <br />
+                <span className="bg-accent text-white rounded-2xl p-2">
+                  promos
                 </span>
+                <h1 className="mt-5 text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
+                  de Bolivia
+                </h1>
               </h1>
 
-              <p className="mt-5 max-w-2xl text-base leading-7 text-blue-100 sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-7 text-primary-light sm:text-lg">
                 Encuentra ofertas, descuentos y
                 promociones de tus negocios
                 favoritos en un solo lugar.
@@ -576,7 +580,7 @@ function Home() {
                 <button
                   type="button"
                   onClick={scrollToPromotions}
-                  className="shrink-0 rounded-full bg-[#E31E24] px-5 py-2.5 text-xs font-bold text-white transition hover:bg-red-700 sm:px-6"
+                  className="shrink-0 rounded-full bg-accent px-5 py-2.5 text-xs font-bold text-white transition hover:bg-accent-dark sm:px-6"
                 >
                   BUSCAR
                 </button>
@@ -607,105 +611,98 @@ function Home() {
           </div>
         </section>
 
-        {/* CATEGORÍAS */}
+                {/* CATEGORÍAS */}
         <section
           id="categorias"
-          className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
+          className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
         >
-          <div className="mb-6">
+          <div className="mb-4">
             <h2 className="text-2xl font-black text-slate-900">
               Explora por categoría
             </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Encuentra promociones según lo que
-              buscas.
-            </p>
           </div>
 
           {loadingCategories ? (
-            <div className="rounded-2xl border border-slate-200 bg-white py-10 text-center text-sm text-slate-400">
-              Cargando categorías...
+            <div className="flex gap-4">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex w-20 shrink-0 flex-col items-center gap-2"
+                >
+                  <div className="h-14 w-14 animate-pulse rounded-full bg-slate-200" />
+                  <div className="h-3 w-12 animate-pulse rounded bg-slate-200" />
+                </div>
+              ))}
             </div>
           ) : categories.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-10 text-center">
-              <p className="text-sm font-semibold text-slate-600">
-                No hay categorías disponibles.
-              </p>
-            </div>
+            <p className="text-sm text-slate-500">
+              No hay categorías disponibles.
+            </p>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
               {/* TODAS */}
               <button
                 type="button"
                 onClick={() =>
                   setSelectedCategory(null)
                 }
-                className={`flex flex-col items-center justify-center rounded-2xl border p-5 text-center transition-all hover:-translate-y-1 ${
-                  selectedCategory === null
-                    ? 'border-[#1D52A0] bg-blue-50 shadow-md'
-                    : 'border-slate-200 bg-white shadow-sm hover:border-slate-300 hover:shadow-md'
-                }`}
+                aria-pressed={selectedCategory === null}
+                className="group flex w-20 shrink-0 flex-col items-center gap-2 text-center"
               >
                 <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                  className={`flex h-14 w-14 items-center justify-center rounded-full border-2 transition ${
                     selectedCategory === null
-                      ? 'bg-white text-[#1D52A0]'
-                      : 'bg-slate-50 text-slate-500'
+                      ? 'border-primary bg-primary text-white shadow-md'
+                      : 'border-slate-200 bg-white text-primary group-hover:border-primary-light group-hover:bg-primary-soft'
                   }`}
                 >
                   <ShoppingBag size={22} />
                 </div>
 
-                <h3 className="mt-3 text-sm font-bold text-slate-900">
+                <span
+                  className={`line-clamp-2 text-xs font-semibold leading-tight ${
+                    selectedCategory === null
+                      ? 'text-primary'
+                      : 'text-slate-600'
+                  }`}
+                >
                   Todas
-                </h3>
-
-                <p className="mt-0.5 text-[11px] text-slate-400">
-                  Todas las promociones
-                </p>
+                </span>
               </button>
 
               {categories.map((category) => {
                 const isSelected =
-                  selectedCategory ===
-                  category.id;
+                  selectedCategory === category.id;
 
                 return (
                   <button
                     type="button"
                     key={category.id}
                     onClick={() =>
-                      setSelectedCategory(
-                        category.id,
-                      )
+                      setSelectedCategory(category.id)
                     }
-                    className={`flex flex-col items-center justify-center rounded-2xl border p-5 text-center transition-all hover:-translate-y-1 ${
-                      isSelected
-                        ? 'border-[#E31E24] bg-red-50 shadow-md'
-                        : 'border-slate-200 bg-white shadow-sm hover:border-slate-300 hover:shadow-md'
-                    }`}
+                    aria-pressed={isSelected}
+                    className="group flex w-20 shrink-0 flex-col items-center gap-2 text-center"
                   >
                     <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      className={`flex h-14 w-14 items-center justify-center rounded-full border-2 transition ${
                         isSelected
-                          ? 'bg-white text-[#E31E24]'
-                          : 'bg-slate-50 text-[#1D52A0]'
+                          ? 'border-accent bg-accent text-white shadow-md'
+                          : 'border-slate-200 bg-white text-primary group-hover:border-primary-light group-hover:bg-primary-soft'
                       }`}
                     >
-                      {getCategoryIcon(
-                        category,
-                      )}
+                      {getCategoryIcon(category)}
                     </div>
 
-                    <h3 className="mt-3 text-sm font-bold text-slate-900">
+                    <span
+                      className={`line-clamp-2 text-xs font-semibold leading-tight ${
+                        isSelected
+                          ? 'text-accent'
+                          : 'text-slate-600'
+                      }`}
+                    >
                       {category.name}
-                    </h3>
-
-                    <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-400">
-                      {category.description ||
-                        'Descubre promociones'}
-                    </p>
+                    </span>
                   </button>
                 );
               })}
@@ -748,14 +745,14 @@ function Home() {
                   setSelectedCategory(null);
                   setSearchTerm('');
                 }}
-                className="self-start text-xs font-bold text-[#1D52A0] hover:underline sm:self-auto"
+                className="self-start text-xs font-bold text-primary hover:underline sm:self-auto"
               >
                 Limpiar filtros
               </button>
             )}
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {loadingPromotions ? (
               <div className="col-span-full rounded-2xl border border-slate-200 bg-white py-14 text-center">
                 <p className="text-sm text-slate-400">
@@ -796,7 +793,7 @@ function Home() {
                     );
                     setSearchTerm('');
                   }}
-                  className="mt-4 rounded-lg bg-[#1D52A0] px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-800"
+                  className="mt-4 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-white transition hover:bg-primary-dark"
                 >
                   LIMPIAR FILTROS
                 </button>
@@ -822,98 +819,72 @@ function Home() {
 
                   return (
                     <article
-                      key={promotion.id}
-                      onClick={() =>
-                        navigate(
-                          `/promociones/${promotion.id}`,
-                        )
-                      }
-                      className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                    >
-                      <div className="relative h-48 overflow-hidden bg-slate-100">
-                        <img
-                          src={
-                            promotion.image ||
-                            'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=500'
-                          }
-                          alt={
-                            promotion.title
-                          }
-                          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                        />
+  key={promotion.id}
+  onClick={() =>
+    navigate(`/promociones/${promotion.id}`)
+  }
+  className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+>
+  <div className="relative h-32 overflow-hidden bg-slate-100 sm:h-48">
+    <img
+      src={
+        promotion.image ||
+        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=500'
+      }
+      alt={promotion.title}
+      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+    />
 
-                        {discountPercentage >
-                          0 && (
-                          <span className="absolute right-3 top-3 rounded-md bg-[#E31E24] px-2.5 py-1 text-xs font-black text-white shadow-md">
-                            {discountPercentage}%
-                            OFF
-                          </span>
-                        )}
-                      </div>
+    {discountPercentage > 0 && (
+      <span className="absolute right-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-black text-white shadow-md sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-xs">
+        {discountPercentage}% OFF
+      </span>
+    )}
+  </div>
 
-                      <div className="p-4">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#1D52A0]">
-                          {
-                            promotion
-                              .category
-                              .name
-                          }
-                        </span>
+  <div className="p-3 sm:p-4">
+    <span className="line-clamp-1 text-[9px] font-bold uppercase tracking-wider text-primary sm:text-[10px]">
+      {promotion.category.name}
+    </span>
 
-                        <h3 className="mt-1 line-clamp-1 text-base font-bold text-slate-900">
-                          {
-                            promotion.title
-                          }
-                        </h3>
+    <h3 className="mt-1 line-clamp-1 text-sm font-bold text-slate-900 sm:text-base">
+      {promotion.title}
+    </h3>
 
-                        <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
-                          <MapPin
-                            size={14}
-                            className="shrink-0"
-                          />
+    <div className="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 sm:mt-2 sm:gap-1.5 sm:text-xs">
+      <MapPin
+        size={12}
+        className="shrink-0 sm:h-3.5 sm:w-3.5"
+      />
 
-                          <span className="line-clamp-1">
-                            {
-                              promotion
-                                .business
-                                .name
-                            }
+      <span className="line-clamp-1">
+        {promotion.business.name}
+        {promotion.business.city
+          ? ` • ${promotion.business.city}`
+          : ''}
+      </span>
+    </div>
 
-                            {promotion
-                              .business
-                              .city
-                              ? ` • ${promotion.business.city}`
-                              : ''}
-                          </span>
-                        </div>
+    <div className="mt-3 flex items-end justify-between border-t border-slate-100 pt-2 sm:mt-4 sm:pt-3">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+        <span className="text-base font-black leading-tight text-accent sm:text-lg">
+          Bs. {discountPrice.toFixed(2)}
+        </span>
 
-                        <div className="mt-4 flex items-end justify-between border-t border-slate-100 pt-3">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-black text-[#E31E24]">
-                              Bs.{' '}
-                              {discountPrice.toFixed(
-                                2,
-                              )}
-                            </span>
+        {originalPrice > discountPrice && (
+          <span className="text-[11px] text-slate-400 line-through sm:text-xs">
+            Bs. {originalPrice.toFixed(2)}
+          </span>
+        )}
+      </div>
 
-                            {originalPrice >
-                              discountPrice && (
-                              <span className="text-xs text-slate-400 line-through">
-                                Bs.{' '}
-                                {originalPrice.toFixed(
-                                  2,
-                                )}
-                              </span>
-                            )}
-                          </div>
-
-                          <ArrowRight
-                            size={18}
-                            className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-[#1D52A0]"
-                          />
-                        </div>
-                      </div>
-                    </article>
+      <ArrowRight
+        size={18}
+        className="hidden text-slate-300 transition group-hover:translate-x-1 group-hover:text-primary sm:block"
+      />
+    </div>
+  </div>
+</article>
                   );
                 },
               )
@@ -923,7 +894,7 @@ function Home() {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-200 bg-[#1D52A0] py-8 text-white">
+      <footer className="border-t border-slate-200 bg-primary py-8 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
             <div>
@@ -931,11 +902,11 @@ function Home() {
                 <Tag size={19} />
               </div>
 
-              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-blue-100">
+              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-primary-light">
                 Grandes descuentos
               </h4>
 
-              <p className="mt-1 text-xs text-blue-200">
+              <p className="mt-1 text-xs text-primary-light">
                 Encuentra ofertas que valen la pena.
               </p>
             </div>
@@ -945,11 +916,11 @@ function Home() {
                 <Building2 size={19} />
               </div>
 
-              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-blue-100">
+              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-primary-light">
                 Negocios locales
               </h4>
 
-              <p className="mt-1 text-xs text-blue-200">
+              <p className="mt-1 text-xs text-primary-light">
                 Descubre promociones de negocios.
               </p>
             </div>
@@ -959,11 +930,11 @@ function Home() {
                 <MapPin size={19} />
               </div>
 
-              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-blue-100">
+              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-primary-light">
                 Cerca de ti
               </h4>
 
-              <p className="mt-1 text-xs text-blue-200">
+              <p className="mt-1 text-xs text-primary-light">
                 Encuentra dónde aprovecharlas.
               </p>
             </div>
@@ -973,18 +944,18 @@ function Home() {
                 <ShoppingBag size={19} />
               </div>
 
-              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-blue-100">
+              <h4 className="mt-3 text-xs font-bold uppercase tracking-wider text-primary-light">
                 Todo en un lugar
               </h4>
 
-              <p className="mt-1 text-xs text-blue-200">
+              <p className="mt-1 text-xs text-primary-light">
                 Explora promociones fácilmente.
               </p>
             </div>
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-5 text-center">
-            <p className="text-[11px] text-blue-200">
+            <p className="text-[11px] text-primary-light">
               © {new Date().getFullYear()} Promos
               Platform. Todos los derechos
               reservados.

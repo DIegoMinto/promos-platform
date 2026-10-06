@@ -1,0 +1,14 @@
+@theme {
+  --color-primary: #6C3BFF;
+  --color-primary-dark: #5628D9;
+  --color-primary-deep: #3B1D99;
+  --color-primary-soft: #F1ECFF;
+  --color-primary-light: #D9CCFF;
+
+  --color-accent: #FF7A30;
+  --color-accent-dark: #E5631A;
+  --color-accent-soft: #FFF0F5;
+
+  --color-surface: #FAFAFA;
+  --color-ink: #202124;
+}

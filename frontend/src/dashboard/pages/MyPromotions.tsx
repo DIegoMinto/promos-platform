@@ -31,10 +31,10 @@ export default function MyPromotions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState<number | null>(
-  null,
-);
-const [promotionToDelete, setPromotionToDelete] =
-  useState<Promotion | null>(null);
+    null,
+  );
+  const [promotionToDelete, setPromotionToDelete] =
+    useState<Promotion | null>(null);
 
   useEffect(() => {
     async function loadPromotions() {
@@ -86,54 +86,54 @@ const [promotionToDelete, setPromotionToDelete] =
     });
   }
 
-async function handleDelete(promotion: Promotion) {
-  if (!accessToken) {
-    setError('No hay una sesión activa.');
-    return;
-  }
-
-  try {
-    setDeletingId(promotion.id);
-    setError('');
-
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/promotions/${promotion.id}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.message ||
-          'No se pudo eliminar la promoción',
-      );
+  async function handleDelete(promotion: Promotion) {
+    if (!accessToken) {
+      setError('No hay una sesión activa.');
+      return;
     }
 
-    setPromotions((currentPromotions) =>
-      currentPromotions.filter(
-        (item) => item.id !== promotion.id,
-      ),
-    );
+    try {
+      setDeletingId(promotion.id);
+      setError('');
 
-    setPromotionToDelete(null);
-  } catch (error) {
-    setError(
-      error instanceof Error
-        ? error.message
-        : 'Ocurrió un error al eliminar la promoción',
-    );
-  } finally {
-    setDeletingId(null);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/promotions/${promotion.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'No se pudo eliminar la promoción',
+        );
+      }
+
+      setPromotions((currentPromotions) =>
+        currentPromotions.filter(
+          (item) => item.id !== promotion.id,
+        ),
+      );
+
+      setPromotionToDelete(null);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Ocurrió un error al eliminar la promoción',
+      );
+    } finally {
+      setDeletingId(null);
+    }
   }
-}
 
-   return (
+  return (
     <>
       <div>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -152,7 +152,7 @@ async function handleDelete(promotion: Promotion) {
             onClick={() =>
               navigate('/negocio/promociones/nueva')
             }
-            className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-dark"
           >
             Nueva promoción
           </button>
@@ -191,7 +191,7 @@ async function handleDelete(promotion: Promotion) {
                 onClick={() =>
                   navigate('/negocio/promociones/nueva')
                 }
-                className="mt-5 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                className="mt-5 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-dark"
               >
                 Crear promoción
               </button>
@@ -234,7 +234,7 @@ async function handleDelete(promotion: Promotion) {
 
                   <div className="p-5">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                      <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary-dark">
                         {promotion.category.name}
                       </span>
 
@@ -262,7 +262,7 @@ async function handleDelete(promotion: Promotion) {
                     )}
 
                     <div className="mt-5 flex items-end gap-3">
-                      <span className="text-2xl font-bold text-red-600">
+                      <span className="text-2xl font-bold text-accent">
                         Bs.{' '}
                         {Number(
                           promotion.discountPrice,
@@ -301,7 +301,7 @@ async function handleDelete(promotion: Promotion) {
                             `/negocio/promociones/${promotion.id}/editar`,
                           )
                         }
-                        className="rounded-xl border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
+                        className="rounded-xl border border-primary-light px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary-soft"
                       >
                         Editar
                       </button>
@@ -408,5 +408,3 @@ async function handleDelete(promotion: Promotion) {
     </>
   );
 }
-
-  

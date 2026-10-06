@@ -223,7 +223,7 @@ export default function DashboardSidebar({
         {/* Brand */}
 
         <div className="border-b border-slate-200 px-6 py-6">
-          <div className="text-2xl font-black tracking-tight text-blue-700">
+          <div className="text-2xl font-black tracking-tight text-primary">
             Promos
           </div>
 
@@ -242,8 +242,8 @@ export default function DashboardSidebar({
             }
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
               isActive('/negocio')
-                ? 'bg-blue-700 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
             }`}
           >
             <DashboardIcon />
@@ -260,8 +260,8 @@ export default function DashboardSidebar({
             }
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
               isActive('/negocio/promociones')
-                ? 'bg-blue-700 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
             }`}
           >
             <PromotionIcon />
@@ -278,8 +278,8 @@ export default function DashboardSidebar({
             }
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
               isActive('/negocio/mi-negocio')
-                ? 'bg-blue-700 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
             }`}
           >
             <BusinessIcon />
@@ -292,7 +292,7 @@ export default function DashboardSidebar({
 
         <div className="border-t border-slate-200 p-4">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
               <UserIcon />
             </div>
 
@@ -335,7 +335,7 @@ export default function DashboardSidebar({
           <MenuIcon />
         </button>
 
-        <div className="text-xl font-black tracking-tight text-blue-700">
+        <div className="text-xl font-black tracking-tight text-primary">
           Promos
         </div>
 
@@ -372,7 +372,7 @@ export default function DashboardSidebar({
 
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-5">
           <div>
-            <div className="text-2xl font-black tracking-tight text-blue-700">
+            <div className="text-2xl font-black tracking-tight text-primary">
               Promos
             </div>
 
@@ -403,8 +403,8 @@ export default function DashboardSidebar({
             }
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition ${
               isActive('/negocio')
-                ? 'bg-blue-700 text-white'
-                : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                ? 'bg-primary text-white'
+                : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
             }`}
           >
             <DashboardIcon />
@@ -421,8 +421,8 @@ export default function DashboardSidebar({
             }
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition ${
               isActive('/negocio/promociones')
-                ? 'bg-blue-700 text-white'
-                : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                ? 'bg-primary text-white'
+                : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
             }`}
           >
             <PromotionIcon />
@@ -439,8 +439,8 @@ export default function DashboardSidebar({
             }
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition ${
               isActive('/negocio/mi-negocio')
-                ? 'bg-blue-700 text-white'
-                : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                ? 'bg-primary text-white'
+                : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
             }`}
           >
             <BusinessIcon />
@@ -453,7 +453,7 @@ export default function DashboardSidebar({
 
         <div className="border-t border-slate-200 p-4">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
               <UserIcon />
             </div>
 
