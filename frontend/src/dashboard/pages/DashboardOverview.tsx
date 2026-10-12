@@ -9,6 +9,36 @@ interface Summary {
   categories: number;
 }
 
+
+interface SubscriptionPlan {
+  code: string;
+  name: string;
+  monthlyPrice: number | string;
+  promotionLimit: number | null;
+}
+
+interface SubscriptionInfo {
+  subscription: {
+    startDate: string;
+    endDate: string;
+  } | null;
+
+  pendingRequest: {
+    id: number;
+    status: string;
+    plan: SubscriptionPlan;
+  } | null;
+
+  plan: SubscriptionPlan;
+
+  promotionUsage: {
+    used: number;
+    limit: number | null;
+    remaining: number | null;
+  };
+}
+
+
 export default function DashboardOverview() {
   const { accessToken, user } = useAuth();
 
@@ -21,6 +51,17 @@ export default function DashboardOverview() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  
+  const [subscriptionInfo, setSubscriptionInfo] =
+    useState<SubscriptionInfo | null>(null);
+
+  const [subscriptionLoading, setSubscriptionLoading] =
+    useState(true);
+
+  const [subscriptionError, setSubscriptionError] =
+    useState('');
+
 
   useEffect(() => {
     async function loadSummary() {
@@ -63,6 +104,51 @@ export default function DashboardOverview() {
 
     loadSummary();
   }, [accessToken]);
+
+  
+useEffect(() => {
+  async function loadSubscription() {
+    if (!accessToken) {
+      setSubscriptionLoading(false);
+      return;
+    }
+
+    try {
+      setSubscriptionLoading(true);
+      setSubscriptionError('');
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/subscriptions/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          'No se pudo cargar la información de tu plan',
+        );
+      }
+
+      const data: SubscriptionInfo = await response.json();
+
+      setSubscriptionInfo(data);
+    } catch (error) {
+      setSubscriptionError(
+        error instanceof Error
+          ? error.message
+          : 'Ocurrió un error al cargar tu plan',
+      );
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  }
+
+  loadSubscription();
+}, [accessToken]);
+
 
   const cards = [
     {
@@ -174,6 +260,113 @@ export default function DashboardOverview() {
           </p>
         </div>
       )}
+
+      
+{/* PLAN Y USO DE PROMOCIONES */}
+<section className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p className="text-sm font-medium text-primary">
+        Tu suscripción
+      </p>
+
+      <h2 className="mt-1 text-2xl font-bold text-slate-900">
+        {subscriptionLoading
+          ? 'Cargando plan...'
+          : subscriptionInfo?.plan.name ?? 'Plan no disponible'}
+      </h2>
+
+      {!subscriptionLoading && subscriptionInfo && (
+        <p className="mt-1 text-sm text-slate-500">
+          {Number(subscriptionInfo.plan.monthlyPrice) === 0
+            ? 'Plan gratuito'
+            : `Bs ${Number(subscriptionInfo.plan.monthlyPrice).toFixed(2)} / mes`}
+        </p>
+      )}
+    </div>
+
+    {!subscriptionLoading && subscriptionInfo && (
+      <div className="rounded-xl bg-primary-soft px-4 py-3">
+        <p className="text-xs font-medium text-primary">
+          {subscriptionInfo.subscription
+            ? 'Suscripción activa'
+            : 'Plan actual'}
+        </p>
+
+        {subscriptionInfo.subscription && (
+          <p className="mt-1 text-sm text-slate-700">
+            Vence el{' '}
+            {new Date(
+              subscriptionInfo.subscription.endDate,
+            ).toLocaleDateString('es-BO')}
+          </p>
+        )}
+      </div>
+    )}
+  </div>
+
+  {subscriptionLoading ? (
+    <p className="mt-6 text-sm text-slate-500">
+      Consultando uso de promociones...
+    </p>
+  ) : subscriptionInfo ? (
+    <div className="mt-6">
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-sm font-medium text-slate-700">
+          Promociones utilizadas
+        </p>
+
+        <p className="text-sm font-bold text-slate-900">
+          {subscriptionInfo.promotionUsage.used}
+          {' / '}
+          {subscriptionInfo.promotionUsage.limit ?? '∞'}
+        </p>
+      </div>
+
+      {subscriptionInfo.promotionUsage.limit !== null && (
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{
+              width: `${Math.min(
+                100,
+                (subscriptionInfo.promotionUsage.used /
+                  Math.max(
+                    1,
+                    subscriptionInfo.promotionUsage.limit,
+                  )) *
+                  100,
+              )}%`,
+            }}
+          />
+        </div>
+      )}
+
+      <p className="mt-2 text-sm text-slate-500">
+        {subscriptionInfo.promotionUsage.remaining === null
+          ? 'Tu plan no tiene un límite numérico configurado.'
+          : subscriptionInfo.promotionUsage.remaining === 0
+            ? 'Has alcanzado el límite de tu plan.'
+            : `Te quedan ${subscriptionInfo.promotionUsage.remaining} promociones disponibles.`}
+      </p>
+
+      {subscriptionInfo.pendingRequest && (
+        <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+          Tienes una solicitud del plan{' '}
+          <strong>
+            {subscriptionInfo.pendingRequest.plan.name}
+          </strong>{' '}
+          pendiente de revisión.
+        </p>
+      )}
+    </div>
+  ) : (
+    <p className="mt-4 text-sm text-red-600">
+      {subscriptionError || 'No se pudo cargar tu plan.'}
+    </p>
+  )}
+</section>
+
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (

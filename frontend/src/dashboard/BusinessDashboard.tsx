@@ -9,6 +9,7 @@ import MyPromotions from './pages/MyPromotions';
 import CreatePromotion from './pages/CreatePromotion';
 import EditPromotion from './pages/EditPromotion';
 import MyBusiness from './pages/MyBusiness';
+import SubscriptionPlans from './pages/SubscriptionPlans';
 
 export default function BusinessDashboard() {
   const { user } = useAuth();
@@ -43,6 +44,11 @@ export default function BusinessDashboard() {
             <Route
               path="mi-negocio"
               element={<MyBusiness />}
+            />
+
+            <Route
+              path="planes"
+              element={<SubscriptionPlans />}
             />
 
             <Route

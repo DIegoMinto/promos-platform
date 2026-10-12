@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import PromotionMiniMap from '../components/PromotionMiniMap';
 
 interface Branch {
   id: number;
@@ -346,45 +347,50 @@ function PromotionDetail() {
                       </div>
                     </div>
 
-                    <div className="mt-5 space-y-3">
-                      {promotion.branches.map(
-                        ({ branch }) => (
-                          <div
-                            key={branch.id}
-                            className="rounded-xl bg-slate-50 p-4"
-                          >
-                            <h3 className="text-sm font-black text-slate-900">
-                              {branch.name}
-                            </h3>
+<div className="mt-5 space-y-3">
+  {promotion.branches.map(({ branchId, branch }) => (
+    <div
+      key={branchId}
+      className="rounded-xl bg-slate-50 p-4"
+    >
+      <h3 className="text-sm font-black text-slate-900">
+        {branch.name}
+      </h3>
 
-                            <div className="mt-2 flex items-start gap-2 text-sm text-slate-600">
-                              <LocationIcon />
+      <div className="mt-2 flex items-start gap-2 text-sm text-slate-600">
+        <LocationIcon />
 
-                              <div>
-                                <p>
-                                  {branch.address}
-                                </p>
+        <div>
+          <p>{branch.address}</p>
 
-                                {branch.city && (
-                                  <p className="mt-0.5 text-xs text-slate-400">
-                                    {branch.city}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
+          {branch.city && (
+            <p className="mt-0.5 text-xs text-slate-400">
+              {branch.city}
+            </p>
+          )}
+        </div>
+      </div>
 
-                            {branch.phone && (
-                              <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
-                                <PhoneIcon />
-                                <span>
-                                  {branch.phone}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        ),
-                      )}
-                    </div>
+      {branch.phone && (
+        <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
+          <PhoneIcon />
+          <span>{branch.phone}</span>
+        </div>
+      )}
+
+      <div className="mt-4">
+        <PromotionMiniMap
+          branches={[
+            {
+              branchId,
+              branch,
+            },
+          ]}
+        />
+      </div>
+    </div>
+  ))}
+</div>
                   </div>
                 )}
 

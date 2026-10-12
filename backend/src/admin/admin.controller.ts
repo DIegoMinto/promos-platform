@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -128,4 +129,41 @@ export class AdminController {
       status,
     );
   }
+
+  
+  // =========================
+  // SOLICITUDES DE SUSCRIPCIÓN
+  // =========================
+
+  @Get('subscription-requests')
+  getSubscriptionRequests(
+    @Query('status') status?: string,
+  ) {
+    return this.adminService.getSubscriptionRequests(status);
+  }
+
+  @Patch('subscription-requests/:id/approve')
+  approveSubscriptionRequest(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: any,
+  ) {
+    return this.adminService.approveSubscriptionRequest(
+      id,
+      Number(request.user.id),
+    );
+  }
+
+  @Patch('subscription-requests/:id/reject')
+  rejectSubscriptionRequest(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('adminNotes') adminNotes: string,
+    @Req() request: any,
+  ) {
+    return this.adminService.rejectSubscriptionRequest(
+      id,
+      Number(request.user.id),
+      adminNotes,
+    );
+  }
+
 }

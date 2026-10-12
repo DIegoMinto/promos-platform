@@ -117,6 +117,13 @@ export class PromotionsController {
     );
   }
 
+  
+@Get('featured')
+findFeaturedPromotions() {
+  return this.promotionsService.findFeaturedPromotions();
+}
+
+
   @Get(':id')
 findPublicPromotionById(
   @Param('id', ParseIntPipe) id: number,

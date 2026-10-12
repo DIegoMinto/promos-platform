@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 
+import LocationPicker from '../components/LocationPicker';
 import { useAuth } from '../../context/useAuth';
+import {
+  CircleMarker,
+  MapContainer,
+  TileLayer,
+} from 'react-leaflet';
 
+import 'leaflet/dist/leaflet.css';
 interface Business {
   id: number;
   userId: number;
@@ -28,6 +35,50 @@ interface Branch {
   status: boolean;
 }
 
+function BranchMapPreview({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}) {
+  return (
+    <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
+      <MapContainer
+        center={[latitude, longitude]}
+        zoom={15}
+        dragging={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+        boxZoom={false}
+        keyboard={false}
+        zoomControl={false}
+        style={{
+          height: '160px',
+          width: '100%',
+        }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <CircleMarker
+          center={[latitude, longitude]}
+          radius={8}
+          pathOptions={{
+            color: '#ffffff',
+            weight: 3,
+            fillColor: '#075e54',
+            fillOpacity: 1,
+          }}
+        />
+      </MapContainer>
+    </div>
+  );
+}
+
 export default function MyBusiness() {
   const { accessToken } = useAuth();
 
@@ -44,6 +95,12 @@ export default function MyBusiness() {
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
 
+  const [businessLatitude, setBusinessLatitude] =
+  useState<number | null>(null);
+
+const [businessLongitude, setBusinessLongitude] =
+  useState<number | null>(null);
+
   const [showBranchForm, setShowBranchForm] =
     useState(false);
 
@@ -55,6 +112,12 @@ export default function MyBusiness() {
     useState('');
   const [branchPhone, setBranchPhone] =
     useState('');
+
+  const [branchLatitude, setBranchLatitude] =
+  useState<number | null>(null);
+
+  const [branchLongitude, setBranchLongitude] =
+    useState<number | null>(null);
 
   const [editingBranchId, setEditingBranchId] =
     useState<number | null>(null);
@@ -136,6 +199,8 @@ export default function MyBusiness() {
         setPhone(businessData.phone ?? '');
         setAddress(businessData.address ?? '');
         setCity(businessData.city ?? '');
+        setBusinessLatitude(businessData.latitude ?? null);
+setBusinessLongitude(businessData.longitude ?? null);
 
         setBranches(branchesData);
       } catch (error) {
@@ -176,12 +241,14 @@ export default function MyBusiness() {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            name,
-            description,
-            phone,
-            address,
-            city,
-          }),
+  name,
+  description,
+  phone,
+  address,
+  city,
+  latitude: businessLatitude,
+  longitude: businessLongitude,
+}),
         },
       );
 
@@ -208,7 +275,8 @@ export default function MyBusiness() {
       setPhone(updatedBusiness.phone ?? '');
       setAddress(updatedBusiness.address ?? '');
       setCity(updatedBusiness.city ?? '');
-
+setBusinessLatitude(updatedBusiness.latitude ?? null);
+setBusinessLongitude(updatedBusiness.longitude ?? null);
       setSuccess(
         'La información del negocio se actualizó correctamente.',
       );
@@ -246,11 +314,13 @@ export default function MyBusiness() {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            name: branchName,
-            address: branchAddress,
-            city: branchCity || undefined,
-            phone: branchPhone || undefined,
-          }),
+  name: branchName,
+  address: branchAddress,
+  city: branchCity || undefined,
+  phone: branchPhone || undefined,
+  latitude: branchLatitude,
+  longitude: branchLongitude,
+}),
         },
       );
 
@@ -277,6 +347,8 @@ export default function MyBusiness() {
       setBranchAddress('');
       setBranchCity('');
       setBranchPhone('');
+      setBranchLatitude(null);
+      setBranchLongitude(null);
 
       setShowBranchForm(false);
 
@@ -301,7 +373,8 @@ export default function MyBusiness() {
     setBranchAddress(branch.address);
     setBranchCity(branch.city ?? '');
     setBranchPhone(branch.phone ?? '');
-
+    setBranchLatitude(branch.latitude);
+    setBranchLongitude(branch.longitude);
     setShowBranchForm(false);
     setError('');
     setSuccess('');
@@ -319,7 +392,8 @@ export default function MyBusiness() {
     setBranchAddress('');
     setBranchCity('');
     setBranchPhone('');
-
+    setBranchLatitude(null);
+    setBranchLongitude(null);
     setError('');
   }
 
@@ -346,11 +420,13 @@ export default function MyBusiness() {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            name: branchName,
-            address: branchAddress,
-            city: branchCity || undefined,
-            phone: branchPhone || undefined,
-          }),
+  name: branchName,
+  address: branchAddress,
+  city: branchCity || undefined,
+  phone: branchPhone || undefined,
+  latitude: branchLatitude,
+  longitude: branchLongitude,
+}),
         },
       );
 
@@ -659,6 +735,18 @@ export default function MyBusiness() {
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
               />
             </div>
+
+            
+<div className="mt-6">
+  <LocationPicker
+    latitude={businessLatitude}
+    longitude={businessLongitude}
+    onChange={(latitude, longitude) => {
+      setBusinessLatitude(latitude);
+      setBusinessLongitude(longitude);
+    }}
+  />
+</div>
           </div>
 
           <div className="mt-8 flex justify-end border-t border-slate-100 pt-6">
@@ -816,12 +904,29 @@ export default function MyBusiness() {
               </div>
             </div>
 
+            <div className="mt-6">
+  <LocationPicker
+    latitude={branchLatitude}
+    longitude={branchLongitude}
+    onChange={(latitude, longitude) => {
+      setBranchLatitude(latitude);
+      setBranchLongitude(longitude);
+    }}
+  />
+</div>
+
             <div className="mt-6 flex flex-col-reverse gap-3 border-t border-primary-light pt-5 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={() =>
-                  setShowBranchForm(false)
-                }
+                onClick={() => {
+  setShowBranchForm(false);
+  setBranchName('');
+  setBranchAddress('');
+  setBranchCity('');
+  setBranchPhone('');
+  setBranchLatitude(null);
+  setBranchLongitude(null);
+}}
                 disabled={creatingBranch}
                 className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
               >
@@ -935,6 +1040,17 @@ export default function MyBusiness() {
                   className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light"
                 />
               </div>
+            </div>
+
+                        <div className="mt-6">
+              <LocationPicker
+                latitude={branchLatitude}
+                longitude={branchLongitude}
+                onChange={(latitude, longitude) => {
+                  setBranchLatitude(latitude);
+                  setBranchLongitude(longitude);
+                }}
+              />
             </div>
 
             <div className="mt-6 flex flex-col-reverse gap-3 border-t border-primary-light pt-5 sm:flex-row sm:justify-end">
@@ -1071,6 +1187,22 @@ export default function MyBusiness() {
                       : 'Inactiva'}
                   </span>
                 </div>
+
+                                {branch.latitude !== null &&
+                  branch.longitude !== null && (
+                    <BranchMapPreview
+                      latitude={branch.latitude}
+                      longitude={branch.longitude}
+                    />
+                  )}
+
+                {(branch.latitude === null ||
+                  branch.longitude === null) && (
+                  <p className="mt-4 rounded-xl bg-slate-50 px-3 py-3 text-xs text-slate-500">
+                    Ubicación no registrada. Pulsa Editar
+                    para seleccionar un punto en el mapa.
+                  </p>
+                )}
 
                 <div className="mt-5 flex gap-2 border-t border-slate-100 pt-4">
                   <button

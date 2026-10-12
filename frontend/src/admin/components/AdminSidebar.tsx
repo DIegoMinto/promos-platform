@@ -3,6 +3,7 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
   LogOut,
   Megaphone,
   Settings,
@@ -45,6 +46,11 @@ const navigation = [
     label: 'Categorías',
     path: '/admin/categorias',
     icon: Tags,
+  },
+  {
+  label: 'Suscripciones',
+  path: '/admin/suscripciones',
+  icon: ClipboardList,
   },
 ];
 

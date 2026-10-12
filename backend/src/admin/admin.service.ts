@@ -1,8 +1,16 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
+import {
+  SubscriptionRequestStatus,
+  SubscriptionStatus,
+} from '@prisma/client';
+
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 
@@ -529,4 +537,273 @@ async updateCategoryStatus(
     },
   });
 }
+
+
+  // =========================
+  // SOLICITUDES DE SUSCRIPCIÓN
+  // =========================
+
+  async getSubscriptionRequests(status?: string) {
+    const validStatuses = Object.values(
+      SubscriptionRequestStatus,
+    );
+
+    if (
+      status &&
+      !validStatuses.includes(
+        status as SubscriptionRequestStatus,
+      )
+    ) {
+      throw new BadRequestException(
+        'El estado de solicitud no es válido',
+      );
+    }
+
+    return this.prisma.subscriptionRequest.findMany({
+      where: status
+        ? {
+            status: status as SubscriptionRequestStatus,
+          }
+        : undefined,
+
+      include: {
+        business: {
+          select: {
+            id: true,
+            name: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        plan: true,
+        reviewedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        subscription: true,
+      },
+
+      orderBy: {
+        requestedAt: 'desc',
+      },
+    });
+  }
+
+  
+async approveSubscriptionRequest(
+  requestId: number,
+  adminId: number,
+) {
+  return this.prisma.$transaction(async (tx) => {
+    const request =
+      await tx.subscriptionRequest.findUnique({
+        where: { id: requestId },
+        include: { plan: true },
+      });
+
+    if (!request) {
+      throw new NotFoundException(
+        'Solicitud de suscripción no encontrada',
+      );
+    }
+
+    if (
+      request.status !==
+      SubscriptionRequestStatus.PENDING
+    ) {
+      throw new BadRequestException(
+        'Esta solicitud ya fue revisada',
+      );
+    }
+
+    const now = new Date();
+
+    // 1. Marcar como vencidas las suscripciones
+    // anteriores que ya terminaron.
+    await tx.subscription.updateMany({
+      where: {
+        businessId: request.businessId,
+        status: SubscriptionStatus.ACTIVE,
+        endDate: { lte: now },
+      },
+      data: {
+        status: SubscriptionStatus.EXPIRED,
+      },
+    });
+
+    // 2. Buscar una suscripción actualmente vigente.
+    const activeSubscription =
+      await tx.subscription.findFirst({
+        where: {
+          businessId: request.businessId,
+          status: SubscriptionStatus.ACTIVE,
+          startDate: { lte: now },
+          endDate: { gt: now },
+        },
+      });
+
+    // 3. Si ya tiene una suscripción, finalizarla
+    // antes de activar el nuevo plan.
+    if (activeSubscription) {
+      await tx.subscription.update({
+        where: { id: activeSubscription.id },
+        data: {
+          status: SubscriptionStatus.CANCELLED,
+          endDate: now,
+        },
+      });
+    }
+
+    // 4. Calcular un mes de vigencia sin
+    // desbordamientos en meses más cortos.
+    const startDate = now;
+    const endDate = new Date(startDate);
+    const originalDay = endDate.getDate();
+
+    endDate.setDate(1);
+    endDate.setMonth(endDate.getMonth() + 1);
+
+    const lastDayOfMonth = new Date(
+      endDate.getFullYear(),
+      endDate.getMonth() + 1,
+      0,
+    ).getDate();
+
+    endDate.setDate(
+      Math.min(originalDay, lastDayOfMonth),
+    );
+
+    // 5. Crear la nueva suscripción.
+    const subscription =
+      await tx.subscription.create({
+        data: {
+          businessId: request.businessId,
+          planId: request.planId,
+          status: SubscriptionStatus.ACTIVE,
+          monthlyPrice: request.monthlyPrice,
+          startDate,
+          endDate,
+        },
+      });
+
+    // 6. Aprobar la solicitud solo si continúa
+    // pendiente. Si falla, toda la transacción
+    // se revierte.
+    const result =
+      await tx.subscriptionRequest.updateMany({
+        where: {
+          id: requestId,
+          status: SubscriptionRequestStatus.PENDING,
+        },
+        data: {
+          status: SubscriptionRequestStatus.APPROVED,
+          reviewedById: adminId,
+          reviewedAt: now,
+          subscriptionId: subscription.id,
+          adminNotes: null,
+        },
+      });
+
+    if (result.count !== 1) {
+      throw new ConflictException(
+        'La solicitud ya fue procesada por otro administrador',
+      );
+    }
+
+    // 7. Devolver la solicitud con sus relaciones.
+    return tx.subscriptionRequest.findUnique({
+      where: { id: requestId },
+      include: {
+        business: true,
+        plan: true,
+        subscription: true,
+        reviewedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+  });
+}
+
+  async rejectSubscriptionRequest(
+    requestId: number,
+    adminId: number,
+    adminNotes?: string,
+  ) {
+    const request =
+      await this.prisma.subscriptionRequest.findUnique({
+        where: { id: requestId },
+      });
+
+    if (!request) {
+      throw new NotFoundException(
+        'Solicitud de suscripción no encontrada',
+      );
+    }
+
+    if (
+      request.status !==
+      SubscriptionRequestStatus.PENDING
+    ) {
+      throw new BadRequestException(
+        'Esta solicitud ya fue revisada',
+      );
+    }
+
+    const notes = adminNotes?.trim();
+
+    if (!notes) {
+      throw new BadRequestException(
+        'Debes indicar el motivo del rechazo',
+      );
+    }
+
+    const result =
+      await this.prisma.subscriptionRequest.updateMany({
+        where: {
+          id: requestId,
+          status: SubscriptionRequestStatus.PENDING,
+        },
+        data: {
+          status: SubscriptionRequestStatus.REJECTED,
+          reviewedById: adminId,
+          reviewedAt: new Date(),
+          adminNotes: notes,
+        },
+      });
+
+    if (result.count !== 1) {
+      throw new ConflictException(
+        'La solicitud ya fue procesada por otro administrador',
+      );
+    }
+
+    return this.prisma.subscriptionRequest.findUnique({
+      where: { id: requestId },
+      include: {
+        business: true,
+        plan: true,
+        reviewedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+  }
+
 }

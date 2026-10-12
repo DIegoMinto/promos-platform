@@ -96,7 +96,69 @@ async create(
     );
   }
 
+  
   return this.prisma.$transaction(async (tx) => {
+    const now = new Date();
+
+    // 1. Buscar una suscripción pagada vigente.
+    const subscription = await tx.subscription.findFirst({
+      where: {
+        businessId: business.id,
+        status: 'ACTIVE',
+        startDate: { lte: now },
+        endDate: { gt: now },
+      },
+      include: {
+        plan: true,
+      },
+      orderBy: {
+        endDate: 'desc',
+      },
+    });
+
+    // 2. Si no hay suscripción vigente, aplicar el plan Gratis.
+    let promotionLimit: number | null;
+
+    if (subscription) {
+      promotionLimit = subscription.plan.promotionLimit;
+    } else {
+      const freePlan = await tx.plan.findUnique({
+        where: {
+          code: 'FREE',
+        },
+      });
+
+      if (!freePlan || !freePlan.status) {
+        throw new NotFoundException(
+          'El plan Gratis no está configurado o está inactivo',
+        );
+      }
+
+      promotionLimit = freePlan.promotionLimit;
+    }
+
+    // 3. Contar las promociones activas que todavía no vencieron.
+    const currentPromotions = await tx.promotion.count({
+      where: {
+        businessId: business.id,
+        status: true,
+        endDate: {
+          gt: now,
+        },
+      },
+    });
+
+    // 4. Impedir crear promociones si se alcanzó el límite.
+    if (
+      promotionLimit !== null &&
+      currentPromotions >= promotionLimit
+    ) {
+      throw new ConflictException(
+        `Has alcanzado el límite de ${promotionLimit} promociones de tu plan. Desactiva o espera a que venza una promoción, o cambia de plan para publicar más.`,
+      );
+    }
+
+    // 5. Crear la promoción como antes.
     const promotion = await tx.promotion.create({
       data: {
         businessId: business.id,
@@ -134,6 +196,7 @@ async create(
   });
 }
 
+
 async findMyPromotions(userId: number) {
   const business = await this.prisma.business.findUnique({
     where: {
@@ -165,7 +228,8 @@ async findMyPromotions(userId: number) {
   });
 }
 
-  async findPublicPromotions() {
+  
+async findPublicPromotions() {
   const now = new Date();
 
   return this.prisma.promotion.findMany({
@@ -180,6 +244,7 @@ async findMyPromotions(userId: number) {
     },
     include: {
       category: true,
+
       business: {
         select: {
           id: true,
@@ -189,8 +254,32 @@ async findMyPromotions(userId: number) {
           logo: true,
           address: true,
           city: true,
-          latitude: true,
-          longitude: true,
+        },
+      },
+
+      branches: {
+        where: {
+          branch: {
+            status: true,
+            latitude: {
+              not: null,
+            },
+            longitude: {
+              not: null,
+            },
+          },
+        },
+        include: {
+          branch: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              city: true,
+              latitude: true,
+              longitude: true,
+            },
+          },
         },
       },
     },
@@ -199,6 +288,7 @@ async findMyPromotions(userId: number) {
     },
   });
 }
+
 
 async getSummary(userId: number) {
   const business = await this.prisma.business.findUnique({
@@ -496,9 +586,85 @@ async findPublicPromotionById(id: number) {
       },
     },
 
+
+include: {
+  category: true,
+
+  business: {
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      phone: true,
+      logo: true,
+      address: true,
+      city: true,
+    },
+  },
+
+  branches: {
+    where: {
+      branch: {
+        status: true,
+        latitude: {
+          not: null,
+        },
+        longitude: {
+          not: null,
+        },
+      },
+    },
+    include: {
+      branch: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+          city: true,
+          latitude: true,
+          longitude: true,
+        },
+      },
+    },
+  },
+},
+
+  });
+
+  if (!promotion) {
+    throw new NotFoundException(
+      'La promoción no existe o ya no está disponible',
+    );
+  }
+
+  return promotion;
+}
+
+
+async findFeaturedPromotions() {
+  const now = new Date();
+
+  const promotions = await this.prisma.promotion.findMany({
+    where: {
+      status: true,
+      startDate: { lte: now },
+      endDate: { gte: now },
+      business: {
+        subscriptions: {
+          some: {
+            status: 'ACTIVE',
+            startDate: { lte: now },
+            endDate: { gt: now },
+            plan: {
+              code: 'FEATURED',
+              status: true,
+            },
+          },
+        },
+      },
+    },
     include: {
       category: true,
-
       business: {
         select: {
           id: true,
@@ -512,28 +678,30 @@ async findPublicPromotionById(id: number) {
           longitude: true,
         },
       },
-
-      branches: {
-        where: {
-          branch: {
-            status: true,
-          },
-        },
-
-        include: {
-          branch: true,
-        },
-      },
     },
+    orderBy: { createdAt: 'desc' },
   });
 
-  if (!promotion) {
-    throw new NotFoundException(
-      'La promoción no existe o ya no está disponible',
-    );
-  }
+  // Evitar que un solo negocio ocupe todos los espacios.
+  const uniqueBusinesses = promotions.filter(
+    (promotion, index, list) =>
+      list.findIndex(
+        (item) => item.businessId === promotion.businessId,
+      ) === index,
+  );
 
-  return promotion;
+  // Rotar los resultados cada 5 minutos.
+  const interval = 5 * 60 * 1000;
+  const rotation = Math.floor(Date.now() / interval)
+    % Math.max(uniqueBusinesses.length, 1);
+
+  const rotated = [
+    ...uniqueBusinesses.slice(rotation),
+    ...uniqueBusinesses.slice(0, rotation),
+  ];
+
+  return rotated.slice(0, 4);
 }
+
 
 }

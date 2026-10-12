@@ -286,6 +286,19 @@ export default function DashboardSidebar({
 
             <span>Mi negocio</span>
           </button>
+
+          <button
+  type="button"
+  onClick={() => handleNavigation('/negocio/planes')}
+  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+    isActive('/negocio/planes')
+      ? 'bg-primary text-white shadow-sm'
+      : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
+  }`}
+>
+  <span className="text-lg" aria-hidden="true">♧</span>
+  <span>Planes y suscripción</span>
+</button>
         </nav>
 
         {/* User */}
@@ -447,6 +460,19 @@ export default function DashboardSidebar({
 
             <span>Mi negocio</span>
           </button>
+
+          <button
+  type="button"
+  onClick={() => handleNavigation('/negocio/planes')}
+  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+    isActive('/negocio/planes')
+      ? 'bg-primary text-white shadow-sm'
+      : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
+  }`}
+>
+  <span className="text-lg" aria-hidden="true">♧</span>
+  <span>Planes y suscripción</span>
+</button>
         </nav>
 
         {/* Mobile user */}

@@ -19,6 +19,8 @@ import AdminBusinesses from '../admin/AdminBusinesses';
 import AdminPromotions from '../admin/AdminPromotions';
 import AdminCategories from '../admin/AdminCategories';
 import AdminLayout from '../admin/components/AdminLayout';
+import AdminSubscriptions from '../admin/AdminSubscriptions';
+
 
 import { useAuth } from '../context/useAuth';
 
@@ -157,6 +159,19 @@ export default function AppRouter() {
                 to="/login"
                 replace
               />
+            )
+          }
+        />
+
+        <Route
+          path="/admin/suscripciones"
+          element={
+            isAdmin ? (
+              <AdminLayout>
+                <AdminSubscriptions />
+              </AdminLayout>
+            ) : (
+              <Navigate to="/login" replace />
             )
           }
         />

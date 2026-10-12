@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowRight,
   Building2,
@@ -10,7 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import PromotionsMap from '../components/PromotionsMap';
 import { useAuth } from '../context/useAuth';
 import { categoryIcons } from '../constants/categoryIcons';
 
@@ -38,6 +38,18 @@ interface Promotion {
     latitude: number | null;
     longitude: number | null;
   };
+  branches: {
+  promotionId: number;
+  branchId: number;
+  branch: {
+    id: number;
+    name: string;
+    address: string;
+    city: string | null;
+    latitude: number | null;
+    longitude: number | null;
+  };
+}[];
 }
 
 interface Category {
@@ -53,6 +65,11 @@ function Home() {
 
   const [promotions, setPromotions] =
     useState<Promotion[]>([]);
+
+    
+const [featuredPromotions, setFeaturedPromotions] =
+  useState<Promotion[]>([]);
+
 
   const [categories, setCategories] =
     useState<Category[]>([]);
@@ -74,51 +91,70 @@ function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] =
     useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  
+useEffect(() => {
+  let cancelled = false;
 
-    async function fetchPromotions() {
-      try {
-        setLoadingPromotions(true);
-        setPromotionsError('');
+  async function fetchPromotions() {
+    try {
+      setLoadingPromotions(true);
+      setPromotionsError('');
 
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/promotions`,
+      const [promotionsResponse, featuredResponse] =
+        await Promise.all([
+          fetch(
+            `${import.meta.env.VITE_API_URL}/api/promotions`,
+          ),
+          fetch(
+            `${import.meta.env.VITE_API_URL}/api/promotions/featured`,
+          ),
+        ]);
+
+      if (!promotionsResponse.ok) {
+        throw new Error(
+          'No se pudieron cargar las promociones',
         );
+      }
 
-        if (!response.ok) {
-          throw new Error(
-            'No se pudieron cargar las promociones',
-          );
-        }
+      const data: Promotion[] =
+        await promotionsResponse.json();
 
-        const data: Promotion[] =
-          await response.json();
+      let featuredData: Promotion[] = [];
 
-        if (!cancelled) {
-          setPromotions(data);
-        }
-      } catch (error) {
-        console.error(error);
+      if (featuredResponse.ok) {
+        featuredData = await featuredResponse.json();
+      } else {
+        console.error(
+          'No se pudieron cargar las promociones destacadas',
+        );
+      }
 
-        if (!cancelled) {
-          setPromotionsError(
-            'No se pudieron cargar las promociones.',
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingPromotions(false);
-        }
+      if (!cancelled) {
+        setPromotions(data);
+        setFeaturedPromotions(featuredData);
+      }
+    } catch (error) {
+      console.error(error);
+
+      if (!cancelled) {
+        setPromotionsError(
+          'No se pudieron cargar las promociones.',
+        );
+      }
+    } finally {
+      if (!cancelled) {
+        setLoadingPromotions(false);
       }
     }
+  }
 
-    fetchPromotions();
+  fetchPromotions();
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  return () => {
+    cancelled = true;
+  };
+}, []);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -188,6 +224,84 @@ function Home() {
 
       return matchesCategory && matchesSearch;
     });
+
+    
+const filteredFeaturedPromotions =
+  featuredPromotions.filter((promotion) => {
+    const matchesCategory =
+      selectedCategory === null ||
+      promotion.category.id === selectedCategory;
+
+    const matchesSearch =
+      normalizedSearchTerm === '' ||
+      promotion.title
+        .toLowerCase()
+        .includes(normalizedSearchTerm) ||
+      (promotion.description ?? '')
+        .toLowerCase()
+        .includes(normalizedSearchTerm) ||
+      promotion.business.name
+        .toLowerCase()
+        .includes(normalizedSearchTerm) ||
+      (promotion.business.city ?? '')
+        .toLowerCase()
+        .includes(normalizedSearchTerm) ||
+      promotion.category.name
+        .toLowerCase()
+        .includes(normalizedSearchTerm);
+
+    return matchesCategory && matchesSearch;
+  });
+
+const featuredPromotionIds = new Set(
+  filteredFeaturedPromotions.map(
+    (promotion) => promotion.id,
+  ),
+);
+
+const regularFilteredPromotions =
+  filteredPromotions.filter(
+    (promotion) => !featuredPromotionIds.has(promotion.id),
+  );
+
+
+const mapLocations = useMemo(() => {
+  return filteredPromotions.flatMap((promotion) =>
+    (promotion.branches ?? []).flatMap(
+      ({ branch }) => {
+        const { latitude, longitude } = branch;
+
+        if (
+          latitude == null ||
+          longitude == null ||
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude) ||
+          latitude < -90 ||
+          latitude > 90 ||
+          longitude < -180 ||
+          longitude > 180
+        ) {
+          return [];
+        }
+
+        return [
+          {
+            promotionId: promotion.id,
+            promotionTitle: promotion.title,
+            businessName: promotion.business.name,
+            branchName: branch.name,
+            address: branch.address,
+            city: branch.city ?? '',
+            latitude,
+            longitude,
+          },
+        ];
+      },
+    ),
+  );
+}, [filteredPromotions]);
+
+
 
   const selectedCategoryName =
     selectedCategory === null
@@ -708,6 +822,162 @@ function Home() {
           )}
         </section>
 
+        
+{/* MAPA DE PROMOCIONES */}
+<section
+  id="mapa"
+  className="mx-auto max-w-7xl px-4 py-6 sm:px-6"
+>
+  <div className="mb-5">
+    <div className="flex items-center gap-2">
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+        <MapPin size={21} />
+      </span>
+
+      <div>
+        <h2 className="text-2xl font-black text-slate-900">
+          Encuentra promociones cerca de ti
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Explora las sucursales y descubre qué
+          promociones ofrecen.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <PromotionsMap
+    locations={mapLocations}
+    onSelectPromotion={(promotionId) =>
+      navigate(`/promociones/${promotionId}`)
+    }
+  />
+</section>
+
+
+{/* PROMOCIONES DESTACADAS */}
+
+{filteredFeaturedPromotions.length > 0 && (
+
+    <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6">
+      <div className="mb-5 flex items-end justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 text-accent">
+              <Tag size={19} />
+            </span>
+
+            <h2 className="text-2xl font-black text-slate-900">
+              Promociones destacadas
+            </h2>
+          </div>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Descubre ofertas con mayor visibilidad.
+          </p>
+        </div>
+
+        <span className="hidden rounded-full bg-accent/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-accent sm:inline-flex">
+          Selección destacada
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+        {filteredFeaturedPromotions.map((promotion) => {
+          const originalPrice = Number(
+            promotion.originalPrice,
+          );
+
+          const discountPrice = Number(
+            promotion.discountPrice,
+          );
+
+          const discountPercentage =
+            getDiscountPercentage(
+              originalPrice,
+              discountPrice,
+            );
+
+          return (
+            <article
+              key={promotion.id}
+              onClick={() =>
+                navigate(`/promociones/${promotion.id}`)
+              }
+              className="group cursor-pointer overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="relative h-32 overflow-hidden bg-slate-100 sm:h-48">
+                <img
+                  src={
+                    promotion.image ||
+                    'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=500'
+                  }
+                  alt={promotion.title}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                />
+
+                <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-amber-950 shadow-md sm:left-3 sm:top-3 sm:text-[10px]">
+                  <Tag size={11} />
+                  Destacada
+                </span>
+
+                {discountPercentage > 0 && (
+                  <span className="absolute right-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-black text-white shadow-md sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-xs">
+                    {discountPercentage}% OFF
+                  </span>
+                )}
+              </div>
+
+              <div className="p-3 sm:p-4">
+                <span className="line-clamp-1 text-[9px] font-bold uppercase tracking-wider text-primary sm:text-[10px]">
+                  {promotion.category.name}
+                </span>
+
+                <h3 className="mt-1 line-clamp-1 text-sm font-bold text-slate-900 sm:text-base">
+                  {promotion.title}
+                </h3>
+
+                <div className="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 sm:mt-2 sm:gap-1.5 sm:text-xs">
+                  <MapPin
+                    size={12}
+                    className="shrink-0 sm:h-3.5 sm:w-3.5"
+                  />
+
+                  <span className="line-clamp-1">
+                    {promotion.business.name}
+                    {promotion.business.city
+                      ? ` • ${promotion.business.city}`
+                      : ''}
+                  </span>
+                </div>
+
+                <div className="mt-3 flex items-end justify-between border-t border-slate-100 pt-2 sm:mt-4 sm:pt-3">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+                    <span className="text-base font-black leading-tight text-accent sm:text-lg">
+                      Bs. {discountPrice.toFixed(2)}
+                    </span>
+
+                    {originalPrice > discountPrice && (
+                      <span className="text-[11px] text-slate-400 line-through sm:text-xs">
+                        Bs. {originalPrice.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+
+                  <ArrowRight
+                    size={18}
+                    className="hidden text-slate-300 transition group-hover:translate-x-1 group-hover:text-primary sm:block"
+                  />
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
         {/* PROMOCIONES */}
         <section
           id="promociones"
@@ -720,10 +990,10 @@ function Home() {
                   {selectedCategoryName}
                 </h2>
 
-                {filteredPromotions.length >
+                {regularFilteredPromotions.length >
                   0 && (
                   <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                    {filteredPromotions.length}
+                    {regularFilteredPromotions.length}
                   </span>
                 )}
               </div>
@@ -797,7 +1067,7 @@ function Home() {
                 </button>
               </div>
             ) : (
-              filteredPromotions.map(
+              regularFilteredPromotions.map(
                 (promotion) => {
                   const originalPrice =
                     Number(
