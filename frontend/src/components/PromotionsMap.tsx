@@ -76,7 +76,7 @@ function PromotionsMap({
   ];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="relative z-0 isolate overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
         <div>
           <h3 className="text-sm font-bold text-slate-900">
@@ -117,7 +117,7 @@ function PromotionsMap({
           center={defaultCenter}
           zoom={6}
           scrollWheelZoom={false}
-          className="h-[360px] w-full sm:h-[460px]"
+          className="relative z-0 h-[360px] w-full sm:h-[460px]"
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

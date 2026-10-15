@@ -20,7 +20,9 @@ import AdminPromotions from '../admin/AdminPromotions';
 import AdminCategories from '../admin/AdminCategories';
 import AdminLayout from '../admin/components/AdminLayout';
 import AdminSubscriptions from '../admin/AdminSubscriptions';
-
+import Cart from '../pages/Cart';
+import Checkout from '../pages/Checkout';
+import MyOrders from '../pages/MyOrders';
 
 import { useAuth } from '../context/useAuth';
 
@@ -54,6 +56,39 @@ export default function AppRouter() {
         <Route
           path="/perfil"
           element={<Profile />}
+        />
+
+        <Route
+          path="/carrito"
+          element={
+            user?.role === 'CLIENTE' ? (
+              <Cart />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            user?.role === 'CLIENTE' ? (
+              <Checkout />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/mis-compras"
+          element={
+            user?.role === 'CLIENTE' ? (
+              <MyOrders />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
         />
 
         <Route

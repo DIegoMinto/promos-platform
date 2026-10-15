@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ShoppingCart } from 'lucide-react';
 import PromotionMiniMap from '../components/PromotionMiniMap';
+import CartButton from '../components/CartButton';
+import { useAuth } from '../context/useAuth';
 
 interface Branch {
   id: number;
@@ -27,12 +30,10 @@ interface Promotion {
   discountPrice: number | string;
   startDate: string;
   endDate: string;
-
   category: {
     id: number;
     name: string;
   };
-
   business: {
     id: number;
     name: string;
@@ -44,7 +45,6 @@ interface Promotion {
     latitude: number | null;
     longitude: number | null;
   };
-
   branches: PromotionBranch[];
 }
 
@@ -66,7 +66,7 @@ const ArrowLeftIcon = () => (
 
 const LocationIcon = () => (
   <svg
-    className="h-5 w-5"
+    className="h-5 w-5 shrink-0"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -88,7 +88,7 @@ const LocationIcon = () => (
 
 const PhoneIcon = () => (
   <svg
-    className="h-5 w-5"
+    className="h-5 w-5 shrink-0"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -146,13 +146,18 @@ function PromotionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [promotion, setPromotion] =
-    useState<Promotion | null>(null);
+  const { user, accessToken } = useAuth();
 
+  const [promotion, setPromotion] = useState<Promotion | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [cartError, setCartError] = useState('');
+
   useEffect(() => {
+    let cancelled = false;
+
     async function loadPromotion() {
       try {
         setLoading(true);
@@ -163,29 +168,95 @@ function PromotionDetail() {
         );
 
         if (!response.ok) {
-          throw new Error(
-            'No se pudo encontrar la promoción',
-          );
+          throw new Error('No se pudo encontrar la promoción');
         }
 
         const data: Promotion = await response.json();
 
-        setPromotion(data);
-      } catch (error) {
-        console.error(error);
+        if (!cancelled) {
+          setPromotion(data);
+        }
+      } catch (err) {
+        console.error(err);
 
-        setError(
-          'La promoción no existe o ya no está disponible.',
-        );
+        if (!cancelled) {
+          setError(
+            'La promoción no existe o ya no está disponible.',
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     if (id) {
       loadPromotion();
+    } else {
+      setError('No se especificó una promoción.');
+      setLoading(false);
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
+
+  
+
+async function addToCart(
+  fulfillmentType: 'DELIVERY' | 'PICKUP',
+) {
+  if (!user || user.role !== 'CLIENTE' || !accessToken) {
+    navigate('/login');
+    return;
+  }
+
+  if (!promotion || addingToCart) return;
+
+  setAddingToCart(true);
+  setCartError('');
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/cart/items`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          promotionId: promotion.id,
+          quantity: 1,
+          fulfillmentType,
+        }),
+      },
+    );
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        typeof data?.message === 'string'
+          ? data.message
+          : 'No se pudo añadir la promoción al carrito.',
+      );
+    }
+
+    window.dispatchEvent(new Event('cart-updated'));
+
+    navigate('/checkout');
+  } catch (err) {
+    setCartError(
+      err instanceof Error
+        ? err.message
+        : 'Ocurrió un error al añadir al carrito.',
+    );
+  } finally {
+    setAddingToCart(false);
+  }
+}
 
   if (loading) {
     return (
@@ -219,27 +290,20 @@ function PromotionDetail() {
     );
   }
 
-  const originalPrice = Number(
-    promotion.originalPrice,
-  );
-
-  const discountPrice = Number(
-    promotion.discountPrice,
-  );
+  const originalPrice = Number(promotion.originalPrice);
+  const discountPrice = Number(promotion.discountPrice);
 
   const discountPercentage =
     originalPrice > 0
       ? Math.round(
-          ((originalPrice - discountPrice) /
-            originalPrice) *
-            100,
+          ((originalPrice - discountPrice) / originalPrice) * 100,
         )
       : 0;
 
   return (
     <div className="min-h-screen bg-surface">
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center px-6 py-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
           <button
             type="button"
             onClick={() => navigate('/')}
@@ -248,6 +312,8 @@ function PromotionDetail() {
             <ArrowLeftIcon />
             Volver
           </button>
+
+          {user?.role === 'CLIENTE' && <CartButton />}
         </div>
       </header>
 
@@ -270,6 +336,40 @@ function PromotionDetail() {
             </div>
 
             <div className="flex flex-col p-6 sm:p-8 lg:p-10">
+
+{user?.role === 'CLIENTE' && (
+  <div className="mt-6">
+    {cartError && (
+      <p
+        role="alert"
+        className="mb-3 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700"
+      >
+        {cartError}
+      </p>
+    )}
+
+    <div className="grid grid-cols-2 gap-3">
+      <button
+        type="button"
+        onClick={() => addToCart('DELIVERY')}
+        disabled={addingToCart}
+        className="flex items-center justify-center rounded-xl bg-accent px-3 py-3.5 text-center text-sm font-black text-white transition hover:opacity-90 disabled:opacity-60"
+      >
+        {addingToCart ? 'PROCESANDO...' : 'A MI PUERTA'}
+      </button>
+
+      <button
+        type="button"
+        onClick={() => addToCart('PICKUP')}
+        disabled={addingToCart}
+        className="flex items-center justify-center rounded-xl border border-primary px-3 py-3.5 text-center text-sm font-black text-primary transition hover:bg-primary-soft disabled:opacity-60"
+      >
+        PASO A RECOGERLO
+      </button>
+    </div>
+  </div>
+)}
+<div className="mt-6" />
               <span className="text-xs font-black uppercase tracking-widest text-primary">
                 {promotion.category.name}
               </span>
@@ -311,16 +411,11 @@ function PromotionDetail() {
                     </p>
 
                     <p className="mt-1 text-sm font-semibold text-slate-800">
-                      {formatDate(
-                        promotion.startDate,
-                      )}
+                      {formatDate(promotion.startDate)}
                     </p>
 
                     <p className="text-xs text-slate-500">
-                      hasta{' '}
-                      {formatDate(
-                        promotion.endDate,
-                      )}
+                      hasta {formatDate(promotion.endDate)}
                     </p>
                   </div>
                 </div>
@@ -347,50 +442,50 @@ function PromotionDetail() {
                       </div>
                     </div>
 
-<div className="mt-5 space-y-3">
-  {promotion.branches.map(({ branchId, branch }) => (
-    <div
-      key={branchId}
-      className="rounded-xl bg-slate-50 p-4"
-    >
-      <h3 className="text-sm font-black text-slate-900">
-        {branch.name}
-      </h3>
+                    <div className="mt-5 space-y-3">
+                      {promotion.branches.map(({ branchId, branch }) => (
+                        <div
+                          key={branchId}
+                          className="rounded-xl bg-slate-50 p-4"
+                        >
+                          <h3 className="text-sm font-black text-slate-900">
+                            {branch.name}
+                          </h3>
 
-      <div className="mt-2 flex items-start gap-2 text-sm text-slate-600">
-        <LocationIcon />
+                          <div className="mt-2 flex items-start gap-2 text-sm text-slate-600">
+                            <LocationIcon />
 
-        <div>
-          <p>{branch.address}</p>
+                            <div>
+                              <p>{branch.address}</p>
 
-          {branch.city && (
-            <p className="mt-0.5 text-xs text-slate-400">
-              {branch.city}
-            </p>
-          )}
-        </div>
-      </div>
+                              {branch.city && (
+                                <p className="mt-0.5 text-xs text-slate-400">
+                                  {branch.city}
+                                </p>
+                              )}
+                            </div>
+                          </div>
 
-      {branch.phone && (
-        <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
-          <PhoneIcon />
-          <span>{branch.phone}</span>
-        </div>
-      )}
+                          {branch.phone && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
+                              <PhoneIcon />
+                              <span>{branch.phone}</span>
+                            </div>
+                          )}
 
-      <div className="mt-4">
-        <PromotionMiniMap
-          branches={[
-            {
-              branchId,
-              branch,
-            },
-          ]}
-        />
-      </div>
-    </div>
-  ))}
-</div>
+                          <div className="mt-4">
+                            <PromotionMiniMap
+                              branches={[
+                                {
+                                  branchId,
+                                  branch,
+                                },
+                              ]}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -430,18 +525,32 @@ function PromotionDetail() {
                 {promotion.business.phone && (
                   <div className="mt-3 flex items-center gap-3 text-sm text-slate-600">
                     <PhoneIcon />
-
-                    <span>
-                      {promotion.business.phone}
-                    </span>
+                    <span>{promotion.business.phone}</span>
                   </div>
                 )}
               </div>
 
+              {!user && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/login')}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-sm font-black text-white transition hover:opacity-90"
+                >
+                  <ShoppingCart size={19} />
+                  INICIA SESIÓN PARA COMPRAR
+                </button>
+              )}
+
+              {user && user.role !== 'CLIENTE' && (
+                <p className="mt-6 rounded-xl bg-slate-50 p-4 text-center text-sm text-slate-500">
+                  Solo las cuentas de cliente pueden añadir promociones al carrito.
+                </p>
+              )}
+
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-black text-white transition hover:bg-primary-dark"
+                className="mt-3 w-full rounded-xl border border-slate-200 py-3.5 text-sm font-black text-primary transition hover:bg-slate-50"
               >
                 VER MÁS PROMOCIONES
               </button>

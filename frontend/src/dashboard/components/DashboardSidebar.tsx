@@ -84,6 +84,33 @@ function PromotionIcon() {
   );
 }
 
+
+function OrdersIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-5 w-5"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 1.9-1.4L21 8H6"
+      />
+      <circle cx="10" cy="20" r="1" />
+      <circle cx="18" cy="20" r="1" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10 11h6M13 8v6"
+      />
+    </svg>
+  );
+}
+
+
 function BusinessIcon() {
   return (
     <svg
@@ -287,6 +314,21 @@ export default function DashboardSidebar({
             <span>Mi negocio</span>
           </button>
 
+          
+<button
+  type="button"
+  onClick={() => handleNavigation('/negocio/pedidos')}
+  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+    isActive('/negocio/pedidos')
+      ? 'bg-primary text-white shadow-sm'
+      : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
+  }`}
+>
+  <OrdersIcon />
+  <span>Pedidos</span>
+</button>
+
+
           <button
   type="button"
   onClick={() => handleNavigation('/negocio/planes')}
@@ -460,6 +502,21 @@ export default function DashboardSidebar({
 
             <span>Mi negocio</span>
           </button>
+
+          
+<button
+  type="button"
+  onClick={() => handleNavigation('/negocio/pedidos')}
+  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition ${
+    isActive('/negocio/pedidos')
+      ? 'bg-primary text-white'
+      : 'text-slate-600 hover:bg-primary-soft hover:text-primary'
+  }`}
+>
+  <OrdersIcon />
+  <span>Pedidos</span>
+</button>
+
 
           <button
   type="button"

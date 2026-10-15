@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import PromotionsMap from '../components/PromotionsMap';
 import { useAuth } from '../context/useAuth';
 import { categoryIcons } from '../constants/categoryIcons';
+import CartButton from '../components/CartButton';
 
 interface Promotion {
   id: number;
@@ -357,9 +358,9 @@ const mapLocations = useMemo(() => {
             aria-label="Ir al inicio"
           >
             <img
-              src="/logo.jpg"
-              alt="Promos Platform"
-              className="h-11 w-auto object-contain"
+              src="/logo.png"
+              alt="Promo Bolivia"
+              className="h-20 w-auto object-contain"
             />
           </button>
 
@@ -393,6 +394,18 @@ const mapLocations = useMemo(() => {
             >
               Categorías
             </button>
+
+            {user?.role === 'CLIENTE' && (
+  <button
+    type="button"
+    onClick={() => navigate('/mis-compras')}
+    className="text-xs font-bold uppercase tracking-wider text-slate-600 transition hover:text-accent"
+  >
+    Mis compras
+  </button>
+)}
+
+            {user?.role === 'CLIENTE' && <CartButton />}
 
             <div className="ml-2 flex items-center gap-3">
               {user ? (
@@ -563,6 +576,32 @@ const mapLocations = useMemo(() => {
                   >
                     Categorías
                   </button>
+
+{user?.role === 'CLIENTE' && (
+  <button
+    type="button"
+    onClick={() => {
+      setMobileMenuOpen(false);
+      navigate('/mis-compras');
+    }}
+    className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-primary transition hover:bg-primary-soft"
+  >
+    Mis compras
+  </button>
+)}
+
+                  {user?.role === 'CLIENTE' && (
+  <button
+    type="button"
+    onClick={() => {
+      setMobileMenuOpen(false);
+      navigate('/carrito');
+    }}
+    className="flex w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-primary transition hover:bg-primary-soft"
+  >
+    Mi carrito
+  </button>
+)}
 
                   <div className="my-2 border-t border-slate-100" />
 

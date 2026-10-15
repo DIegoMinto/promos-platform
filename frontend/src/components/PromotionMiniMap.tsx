@@ -94,7 +94,7 @@ export default function PromotionMiniMap({
   }
 
   return (
-    <div className="relative h-36 overflow-hidden rounded-xl border border-slate-200">
+    <div className="relative z-0 isolate h-36 overflow-hidden rounded-xl border border-slate-200">
       <MapContainer
         center={[locations[0].latitude, locations[0].longitude]}
         zoom={13}
