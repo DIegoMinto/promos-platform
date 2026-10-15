@@ -401,10 +401,12 @@ export default function MyBusiness() {
   }
 
   function cancelEditingBranch() {
-    setEditingBranchId(null);
-    resetBranchForm();
-    setError('');
-  }
+  setEditingBranchId(null);
+  setShowBranchForm(false);
+  resetBranchForm();
+  setError('');
+  setSuccess('');
+}
 
   async function submitBranch(
     event: FormEvent<HTMLFormElement>,
@@ -929,18 +931,13 @@ export default function MyBusiness() {
 
             <div className="mt-6 flex flex-col-reverse gap-3 border-t border-primary-light pt-5 sm:flex-row sm:justify-end">
               <button
-                type="button"
-                disabled={creatingBranch || updatingBranch}
-                onClick={() => {
-                  setShowBranchForm(false);
-                  setEditingBranchId(null);
-                  resetBranchForm();
-                  setError('');
-                }}
-                className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
-              >
-                Cancelar
-              </button>
+  type="button"
+  disabled={creatingBranch || updatingBranch}
+  onClick={cancelEditingBranch}
+  className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+>
+  Cancelar
+</button>
               <button
                 type="submit"
                 disabled={creatingBranch || updatingBranch}
