@@ -1,3 +1,4 @@
+
 import {
   ConflictException,
   Injectable,
@@ -21,9 +22,7 @@ export class BusinessesService {
   ) {
     const existingBusiness =
       await this.prisma.business.findUnique({
-        where: {
-          userId,
-        },
+        where: { userId },
       });
 
     if (existingBusiness) {
@@ -36,8 +35,7 @@ export class BusinessesService {
       data: {
         userId,
         name: createBusinessDto.name,
-        description:
-          createBusinessDto.description,
+        description: createBusinessDto.description,
         phone: createBusinessDto.phone,
         logo: createBusinessDto.logo,
         address: createBusinessDto.address,
@@ -51,9 +49,7 @@ export class BusinessesService {
   async findMyBusiness(userId: number) {
     const business =
       await this.prisma.business.findUnique({
-        where: {
-          userId,
-        },
+        where: { userId },
       });
 
     if (!business) {
@@ -71,9 +67,7 @@ export class BusinessesService {
   ) {
     const business =
       await this.prisma.business.findUnique({
-        where: {
-          userId,
-        },
+        where: { userId },
       });
 
     if (!business) {
@@ -82,43 +76,54 @@ export class BusinessesService {
       );
     }
 
+    const {
+      name,
+      description,
+      phone,
+      logo,
+      address,
+      city,
+      latitude,
+      longitude,
+      paymentQrUrl,
+      pickupEnabled,
+      deliveryEnabled,
+      deliveryFee,
+      deliveryInstructions,
+    } = updateBusinessDto;
+
     return this.prisma.business.update({
       where: {
         id: business.id,
       },
       data: {
-        ...(updateBusinessDto.name !== undefined && {
-          name: updateBusinessDto.name,
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(phone !== undefined && { phone }),
+        ...(logo !== undefined && { logo }),
+        ...(address !== undefined && { address }),
+        ...(city !== undefined && { city }),
+        ...(latitude !== undefined && { latitude }),
+        ...(longitude !== undefined && { longitude }),
+
+        ...(paymentQrUrl !== undefined && {
+          paymentQrUrl,
         }),
 
-        ...(updateBusinessDto.description !==
-          undefined && {
-          description:
-            updateBusinessDto.description,
+        ...(pickupEnabled !== undefined && {
+          pickupEnabled,
         }),
 
-        ...(updateBusinessDto.phone !== undefined && {
-          phone: updateBusinessDto.phone,
+        ...(deliveryEnabled !== undefined && {
+          deliveryEnabled,
         }),
 
-        ...(updateBusinessDto.logo !== undefined && {
-          logo: updateBusinessDto.logo,
+        ...(deliveryFee !== undefined && {
+          deliveryFee,
         }),
 
-        ...(updateBusinessDto.address !== undefined && {
-          address: updateBusinessDto.address,
-        }),
-
-        ...(updateBusinessDto.city !== undefined && {
-          city: updateBusinessDto.city,
-        }),
-
-        ...(updateBusinessDto.latitude !== undefined && {
-          latitude: updateBusinessDto.latitude,
-        }),
-
-        ...(updateBusinessDto.longitude !== undefined && {
-          longitude: updateBusinessDto.longitude,
+        ...(deliveryInstructions !== undefined && {
+          deliveryInstructions,
         }),
       },
     });

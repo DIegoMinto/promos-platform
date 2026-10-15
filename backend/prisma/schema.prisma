@@ -31,6 +31,49 @@ enum RedemptionStatus {
   CANCELLED
 }
 
+enum FulfillmentType {
+  PICKUP
+  DELIVERY
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_REVIEW
+  CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum PaymentSubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CheckoutStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+}
+
+
+enum PaymentMethod {
+  TRANSFER
+  CASH_ON_PICKUP
+}
+
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -42,6 +85,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   business Business?
+  cart               Cart?
+  checkoutSessions   Checkout[]
+  orders             Order[]             @relation("CustomerOrders")
+  reviewedPayments   PaymentSubmission[] @relation("PaymentReviewer")
 
   reviewedSubscriptionRequests SubscriptionRequest[] @relation("SubscriptionRequestReviewer")
   requestedRedemptions         PromotionRedemption[] @relation("RedemptionCustomer")
@@ -69,6 +116,13 @@ model Business {
   subscriptions        Subscription[]
   subscriptionRequests SubscriptionRequest[]
   redemptions          PromotionRedemption[]
+  deliveryEnabled     Boolean  @default(false)
+  deliveryFee         Decimal  @default(0) @db.Decimal(10, 2)
+  deliveryInstructions String?
+  orders              Order[]
+
+  paymentQrUrl         String?
+  pickupEnabled        Boolean  @default(true)
 }
 
 model Branch {
@@ -86,6 +140,7 @@ model Branch {
 
   business   Business          @relation(fields: [businessId], references: [id])
   promotions PromotionBranch[]
+  orders Order[]
 }
 
 model Category {
@@ -119,6 +174,8 @@ model Promotion {
   category    Category              @relation(fields: [categoryId], references: [id])
   branches    PromotionBranch[]
   redemptions PromotionRedemption[]
+  cartItems CartItem[]
+  orderItems OrderItem[]
 }
 
 model PromotionBranch {
@@ -209,7 +266,147 @@ model PromotionRedemption {
   business    Business  @relation(fields: [businessId], references: [id])
   validatedBy User?     @relation("RedemptionValidator", fields: [validatedById], references: [id])
 
+  orderItemId Int?
+  orderItem   OrderItem? @relation(fields: [orderItemId], references: [id])
+
+  @@index([orderItemId])
   @@index([customerId, requestedAt])
   @@index([businessId, status])
   @@index([promotionId, status])
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+
+model CartItem {
+  id              Int             @id @default(autoincrement())
+  cartId          Int
+  promotionId     Int
+  quantity        Int             @default(1)
+  fulfillmentType FulfillmentType @default(DELIVERY)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, promotionId, fulfillmentType])
+  @@index([promotionId])
+}
+
+
+model Checkout {
+  id         Int            @id @default(autoincrement())
+  reference  String         @unique
+  customerId Int
+  status     CheckoutStatus @default(OPEN)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  customer User    @relation(fields: [customerId], references: [id])
+  orders   Order[]
+
+  @@index([customerId, createdAt])
+}
+
+model Order {
+  id                Int             @id @default(autoincrement())
+  reference         String          @unique
+  checkoutId        Int
+  customerId        Int
+  businessId        Int
+  branchId          Int?
+  fulfillmentType   FulfillmentType
+  status            OrderStatus     @default(PENDING_PAYMENT)
+
+  customerName      String
+  customerPhone     String
+  deliveryAddress   String?
+  deliveryNotes     String?
+
+  subtotal          Decimal         @db.Decimal(10, 2)
+  deliveryFee       Decimal         @default(0) @db.Decimal(10, 2)
+  total             Decimal         @db.Decimal(10, 2)
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+
+  checkout Checkout @relation(fields: [checkoutId], references: [id])
+  customer User     @relation("CustomerOrders", fields: [customerId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
+  branch Branch?    @relation(fields: [branchId], references: [id])
+
+  items   OrderItem[]
+  payment Payment?
+
+  @@index([customerId, createdAt])
+  @@index([businessId, status, createdAt])
+  @@index([checkoutId])
+}
+
+model OrderItem {
+  id                  Int      @id @default(autoincrement())
+  orderId             Int
+  promotionId         Int
+  promotionTitle      String
+  quantity            Int
+  unitPrice           Decimal  @db.Decimal(10, 2)
+  lineTotal           Decimal  @db.Decimal(10, 2)
+  createdAt           DateTime @default(now())
+
+  order       Order                @relation(fields: [orderId], references: [id])
+  promotion   Promotion            @relation(fields: [promotionId], references: [id])
+  redemptions PromotionRedemption[]
+
+  @@index([orderId])
+  @@index([promotionId])
+}
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  orderId       Int           @unique
+  status        PaymentStatus @default(PENDING)
+  amount        Decimal       @db.Decimal(10, 2)
+  qrImageUrl    String?
+  transferReference String?
+  reviewNotes   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  order       Order              @relation(fields: [orderId], references: [id])
+  submissions PaymentSubmission[]
+  
+  paymentMethod PaymentMethod @default(TRANSFER)
+
+
+  @@index([status, createdAt])
+}
+
+model PaymentSubmission {
+  id             Int                     @id @default(autoincrement())
+  paymentId      Int
+  receiptUrl     String
+  transferReference String?
+  status         PaymentSubmissionStatus @default(PENDING)
+  customerNote   String?
+  reviewerNote   String?
+  reviewedById   Int?
+  submittedAt    DateTime                @default(now())
+  reviewedAt     DateTime?
+
+  payment    Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  reviewedBy User?   @relation("PaymentReviewer", fields: [reviewedById], references: [id])
+
+  @@index([paymentId, submittedAt])
+  @@index([status, submittedAt])
 }

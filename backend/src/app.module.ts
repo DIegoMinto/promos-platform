@@ -9,6 +9,9 @@ import { PromotionsModule } from './promotions/promotions.module.js';
 import { BranchesModule } from './branches/branches.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module.js';
+import { CartModule } from './cart/cart.module.js';
+import { OrdersModule } from './orders/orders.module.js';
+import { PaymentsModule } from './payments/payments.module.js';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module.js';
     BranchesModule,
     AdminModule,
     SubscriptionsModule,
+    CartModule,
+    OrdersModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}

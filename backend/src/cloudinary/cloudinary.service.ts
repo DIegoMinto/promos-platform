@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+import { extname } from 'node:path';
 import { v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
@@ -12,36 +15,74 @@ export class CloudinaryService {
   }
 
   async uploadImage(
+    file: { buffer: Buffer },
+    folder = 'promos-platform/promotions',
+  ): Promise<{ secure_url: string }> {
+    return this.upload(file.buffer, folder, 'image');
+  }
+
+  async uploadReceipt(
     file: {
       buffer: Buffer;
+      mimetype: string;
+      originalname: string;
     },
-    folder = 'promos-platform/promotions',
-  ) {
+  ): Promise<{ secure_url: string }> {
+    const isImage = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+    ].includes(file.mimetype);
+
+    const isPdf = file.mimetype === 'application/pdf';
+
+    if (!isImage && !isPdf) {
+      throw new BadRequestException(
+        'El comprobante debe ser JPG, PNG, WEBP o PDF.',
+      );
+    }
+
+    const extension = extname(file.originalname).toLowerCase();
+    const safeName = `${randomUUID()}${extension}`;
+
+    return this.upload(
+      file.buffer,
+      'promos-platform/payment-receipts',
+      isPdf ? 'raw' : 'image',
+      isPdf ? safeName : undefined,
+    );
+  }
+
+  private upload(
+    buffer: Buffer,
+    folder: string,
+    resourceType: 'image' | 'raw',
+    publicId?: string,
+  ): Promise<{ secure_url: string }> {
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
+      const stream = cloudinary.uploader.upload_stream(
         {
           folder,
-          resource_type: 'image',
+          resource_type: resourceType,
+          ...(publicId ? { public_id: publicId } : {}),
         },
         (error, result) => {
           if (error) {
-            console.error('ERROR CLOUDINARY:', error);
             reject(error);
             return;
           }
 
-          console.log('IMAGEN SUBIDA A CLOUDINARY:', result?.secure_url);
+          if (!result?.secure_url) {
+            reject(new Error('Cloudinary no devolvió la URL del archivo.'));
+            return;
+          }
 
-          resolve(result);
+          resolve({ secure_url: result.secure_url });
         },
       );
 
-      uploadStream.on('error', (error) => {
-        console.error('ERROR EN STREAM CLOUDINARY:', error);
-        reject(error);
-      });
-
-      uploadStream.end(file.buffer);
+      stream.on('error', reject);
+      stream.end(buffer);
     });
   }
 }

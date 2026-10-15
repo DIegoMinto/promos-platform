@@ -1,4 +1,6 @@
+
 import {
+  IsBoolean,
   IsNumber,
   IsOptional,
   IsString,
@@ -12,29 +14,59 @@ export class UpdateBusinessDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
+  description?: string | null;
 
   @IsOptional()
   @IsString()
-  phone?: string;
+  phone?: string | null;
 
   @IsOptional()
   @IsString()
-  logo?: string;
+  logo?: string | null;
 
   @IsOptional()
   @IsString()
-  address?: string;
+  address?: string | null;
 
   @IsOptional()
   @IsString()
-  city?: string;
+  city?: string | null;
 
   @IsOptional()
-  @IsNumber()
-  latitude?: number;
+  @IsNumber({
+    allowNaN: false,
+    allowInfinity: false,
+  })
+  latitude?: number | null;
 
   @IsOptional()
-  @IsNumber()
-  longitude?: number;
+  @IsNumber({
+    allowNaN: false,
+    allowInfinity: false,
+  })
+  longitude?: number | null;
+
+  @IsOptional()
+  @IsString()
+  paymentQrUrl?: string | null;
+
+  @IsOptional()
+  @IsBoolean()
+  pickupEnabled?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  deliveryEnabled?: boolean;
+
+  @IsOptional()
+  @IsNumber({
+    allowNaN: false,
+    allowInfinity: false,
+  })
+  @Min(0)
+  deliveryFee?: number;
+
+  @IsOptional()
+  @IsString()
+  deliveryInstructions?: string | null;
 }
