@@ -69,7 +69,7 @@ function Login() {
 
           <div className="relative z-10 flex w-full flex-col justify-between p-12">
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="Promo Bolivia"
               className="h-14 w-fit object-contain"
             />
