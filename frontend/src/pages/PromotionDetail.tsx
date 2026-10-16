@@ -172,7 +172,15 @@ function PromotionDetail() {
         }
 
         const data: Promotion = await response.json();
-
+console.log(
+  'Ubicaciones recibidas:',
+  data.branches.map(({ branch }) => ({
+    id: branch.id,
+    nombre: branch.name,
+    latitude: branch.latitude,
+    longitude: branch.longitude,
+  })),
+);
         if (!cancelled) {
           setPromotion(data);
         }

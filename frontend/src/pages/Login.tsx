@@ -103,7 +103,7 @@ function Login() {
           <div className="w-full max-w-md">
             <div className="mb-8 flex justify-center lg:hidden">
               <img
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Promo Bolivia"
                 className="h-14 w-auto object-contain"
               />
