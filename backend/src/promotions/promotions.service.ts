@@ -435,38 +435,71 @@ export class PromotionsService {
     });
   }
 
-  async remove(userId: number, promotionId: number) {
-    const business = await this.prisma.business.findUnique({
-      where: { userId },
-    });
+  
 
-    if (!business) {
-      throw new NotFoundException(
-        'El usuario no tiene un negocio registrado',
-      );
-    }
+async remove(userId: number, promotionId: number) {
+  const business = await this.prisma.business.findUnique({
+    where: { userId },
+  });
 
-    const promotion = await this.prisma.promotion.findFirst({
-      where: {
-        id: promotionId,
-        businessId: business.id,
+  if (!business) {
+    throw new NotFoundException(
+      'El usuario no tiene un negocio registrado',
+    );
+  }
+
+  const promotion = await this.prisma.promotion.findFirst({
+    where: {
+      id: promotionId,
+      businessId: business.id,
+    },
+    include: {
+      _count: {
+        select: {
+          redemptions: true,
+          orderItems: true,
+        },
       },
-    });
+    },
+  });
 
-    if (!promotion) {
-      throw new NotFoundException(
-        'La promoción no existe o no pertenece a tu negocio',
-      );
-    }
+  if (!promotion) {
+    throw new NotFoundException(
+      'La promoción no existe o no pertenece a tu negocio',
+    );
+  }
 
-    await this.prisma.promotion.delete({
+  // Si tiene historial, se desactiva para conservarlo.
+  if (
+    promotion._count.redemptions > 0 ||
+    promotion._count.orderItems > 0
+  ) {
+    await this.prisma.promotion.update({
       where: { id: promotion.id },
+      data: { status: false },
     });
 
     return {
-      message: 'Promoción eliminada correctamente',
+      message:
+        'La promoción tiene historial de pedidos o canjes. Se desactivó para conservar esos registros.',
+      deleted: false,
+      deactivated: true,
     };
   }
+
+  // Si no tiene historial, puede eliminarse.
+  await this.prisma.promotion.delete({
+    where: { id: promotion.id },
+  });
+
+  return {
+    message: 'Promoción eliminada correctamente',
+    deleted: true,
+    deactivated: false,
+  };
+}
+
+
 
   async findPublicPromotionById(id: number) {
     const now = new Date();
@@ -508,6 +541,8 @@ branches: {
         city: true,
         phone: true,
         status: true,
+            latitude: true,
+    longitude: true,
       },
     },
   },
